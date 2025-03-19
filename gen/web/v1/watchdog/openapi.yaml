@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: ""
+  version: ""
+paths:
+  /v1/watchdog/reload:
+    post:
+      operationId: reload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReloadRequest'
+        required: true
+      responses:
+        "200":
+          description: watchdog.WatchDog.Reload response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReloadResponse'
+components:
+  schemas:
+    CertificateStatus:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/CertificateStatus.EnumCertStatus'
+        certValid:
+          type: boolean
+        certExpiry:
+          type: integer
+          format: int64
+    CertificateStatus.EnumCertStatus:
+      type: string
+      enum:
+        - EnumCertStatusIgnore
+        - Valid
+        - Expiring
+        - WrongCertificate
+    DomainItem:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        endpoints:
+          type: array
+          items:
+            type: string
+    DomainSummary:
+      type: object
+      properties:
+        domain:
+          $ref: '#/components/schemas/DomainItem'
+        reachable:
+          type: boolean
+        resolvable:
+          type: boolean
+        certStatus:
+          $ref: '#/components/schemas/CertificateStatus'
+        whoIsMutated:
+          type: boolean
+        whoIsMutatedAt:
+          type: integer
+          format: int64
+    ReloadRequest:
+      type: object
+    ReloadResponse:
+      type: object

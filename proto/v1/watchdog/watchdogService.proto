@@ -1,0 +1,79 @@
+/// Please use the following editor setup for this file:
+
+// Tab size=2; Tabs as spaces; Clean up trailing whitepsace
+// 'make proto' will run clang-format to fix formatiing
+syntax = "proto3";
+package watchdog;
+
+option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
+
+import "v1/watchdog/watchdog.proto";
+import "google/api/annotations.proto";
+
+service WatchDog {
+  // when input domain list has modified
+  // reload the new data from yaml file
+  // and rerun the domain checks
+  rpc Reload(ReloadRequest) returns (ReloadResponse) {
+    option (google.api.http) = {
+      post : "/v1/watchdog/reload"
+      body : "*"
+    };
+  }
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+      get : "/v1/watchdog/get"
+    };
+  }
+  rpc GetDetails(GetDetailsRequest) returns (GetDetailsResponse) {
+    option (google.api.http) = {
+      get : "/v1/watchdog/getDetails"
+    };
+  }
+  rpc GetAll(GetAllRequest) returns (GetAllResponse) {
+    option (google.api.http) = {
+      get : "/v1/watchdog/getAll"
+    };
+  }
+  rpc Health(HealthRequest) returns (HealthResponse) {
+    option (google.api.http) = {
+      get : "/v1/watchdog/health"
+    };
+  }
+}
+
+message ReloadRequest {}
+
+message ReloadResponse {}
+
+message GetRequest {
+  string uuid = 1;
+  string name = 2;
+}
+
+message GetResponse { DomainSummary summary = 1; }
+
+message GetDetailsRequest {
+  string uuid = 1;
+  string name = 2;
+}
+
+message GetDetailsResponse { DomainSummary summary = 1; }
+
+message GetAllRequest {}
+
+message GetAllResponse { repeated DomainSummary summaries = 1; }
+
+message HealthRequest {}
+
+message HealthResponse {
+  int64 createdAt = 1;
+  // number of domains being watched
+  int64 numDomains = 2;
+  enum HealthStatus {
+    HealthStatusIgnore = 0;
+    Active = 1;
+    Error = 2;
+  }
+  HealthStatus status = 3;
+}

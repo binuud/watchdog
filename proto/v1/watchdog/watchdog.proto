@@ -1,0 +1,45 @@
+/// Please use the following editor setup for this file:
+
+// Tab size=2; Tabs as spaces; Clean up trailing whitepsace
+// 'make proto' will run clang-format to fix formatiing
+syntax = "proto3";
+package watchdog;
+
+option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
+
+// import "google/protobuf/timestamp.proto";
+
+message DomainItem {
+
+  string uuid = 1;
+  string name = 2;
+  repeated string endpoints = 3;
+}
+
+message CertificateStatus {
+  enum EnumCertStatus {
+    EnumCertStatusIgnore = 0;
+    Valid = 1;
+    Expiring = 2;
+    // when certificate is for a different domain
+    WrongCertificate = 3;
+  }
+  EnumCertStatus status = 1;
+  bool certValid = 2;
+  // time in seconds when the certificates expire
+  int64 certExpiry = 3;
+}
+
+// summary message, which can be used to display summary
+// of domain items on Cli or any UI
+message DomainSummary {
+  DomainItem domain = 1;
+  // is the root url reachable
+  bool reachable = 2;
+  // does the domain name resolv to an ip
+  bool resolvable = 3;
+  CertificateStatus certStatus = 4;
+  bool whoIsMutated = 6;
+  // when was whois data modified
+  int64 whoIsMutatedAt = 7;
+}
