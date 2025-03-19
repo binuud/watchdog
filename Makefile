@@ -4,8 +4,6 @@
 # You can change the default config with `make cnf="config_special.env" build`
 # use build_staging.env for staging server (local too)
 
-# Optional environmental variables
-cnf ?= local.env
 REPO=binuud
 APP_NAME ?= watchdog
 
@@ -16,8 +14,15 @@ DOCKER_HUB_TAG ?= v1.0.1
 
 TAGGED_NAME = $(REPO)/$(APP_NAME)
 
-include $(cnf)
-export $(shell sed 's/=.*//' $(cnf))
+## Needs protoc to be installed
+
+ifndef PROTOC
+PROTOC = protoc
+endif
+
+ifndef PROTOWEB
+PROTOWEB = protoc-gen-grpc-web
+endif
 
 # HELP
 # This will output the help for each task
@@ -37,11 +42,25 @@ build-binary: ## Build the watchDog project
 run: ## Run code once, for auto run on code change, use make run-watch
 	go run services/watchdog/cmd/main.go
 
+protos: ## Buid go and web protos, and swagger openApi json
+	$(PROTOC) -I=./proto/.  \
+	--go_out=./gen/go/ \
+	--go_opt paths=source_relative \
+	--go-grpc_out=./gen/go/ \
+	--go-grpc_opt paths=source_relative \
+	--grpc-gateway_out=./gen/web/ \
+	--grpc-gateway_opt paths=source_relative \
+	--grpc-gateway_opt generate_unbound_methods=true \
+	--grpc-gateway-ts_out=./gen/web/ \
+	--grpc-gateway-ts_opt paths=source_relative \
+	--grpc-gateway-ts_opt generate_unbound_methods=true \
+	--oas_out ./gen/web/v1/watchdog/ \
+	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
+	yq eval ./gen/go/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 vendor: ## go vendor and tidy
 	go mod tidy
 	go mod vendor	
-
 
 test: ## Run tests
 	go test -v ./pkg/...
