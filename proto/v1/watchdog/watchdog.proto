@@ -51,4 +51,6 @@ message DomainSummary {
   bool whoIsMutated = 6;
   // when was whois data modified
   int64 whoIsMutatedAt = 7;
+  // we expect http requests to be redirected to https
+  bool httpsRedirect = 11;
 }
