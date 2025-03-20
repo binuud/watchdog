@@ -17,6 +17,12 @@ export type DomainItem = {
   endpoints?: string[]
 }
 
+export type DomainWatch = {
+  name?: string
+  refreshInterval?: string
+  domains?: DomainItem[]
+}
+
 export type CertificateStatus = {
   status?: CertificateStatusEnumCertStatus
   certValid?: boolean
