@@ -6,6 +6,7 @@ Watchdog - watches domains and certificates for expiry and connectivity.
 
 
 Sample Yaml file
+Sub domains have to be treated as seperate entries
 ```
 name: TestConfig
 refreshinterval: 86400
