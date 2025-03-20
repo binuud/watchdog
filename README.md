@@ -15,5 +15,5 @@ domains:
       endpoints: ["https://www.google.com"]
     - uuid: ""
       name: www.gmail.com
-      endpoints: ["https://www.gmail.com]
+      endpoints: ["https://www.gmail.com"]
 ```
