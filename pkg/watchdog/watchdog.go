@@ -30,6 +30,12 @@ func (s *WatchDogServer) checkDomain(domain *watchdog.DomainItem) {
 		logrus.Errorf("error when checking certificated of domain %s, %v", domain.Name, err)
 	}
 
+	ipAddresses, err := domainUtils.ResolveIP(domain.Name)
+	if err != nil {
+		logrus.Errorf("error when resolving ip of domain %s, %v", domain.Name, err)
+	}
+	logrus.Printf("Ip address of domain %s %v", domain.Name, ipAddresses)
+
 }
 
 func (s *WatchDogServer) analyseCertificates(domain *watchdog.DomainItem) error {

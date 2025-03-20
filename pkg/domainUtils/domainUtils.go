@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -40,4 +41,16 @@ func GetCertificates(domain string, sslPort int) ([]*x509.Certificate, error) {
 
 	return certs, nil
 
+}
+
+// domain names can have multiple IP address
+// #TODO try getting ipv4 and ipv6 seperately
+// return IP address associated with a domain
+func ResolveIP(domainName string) ([]net.IP, error) {
+	addr, err := net.LookupIP(domainName)
+	if err != nil {
+		return nil, err
+	}
+	logrus.Printf("Resolving IP Address (%v)", addr)
+	return addr, nil
 }
