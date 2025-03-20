@@ -37,7 +37,7 @@ func TestCheckDomains(t *testing.T) {
 	writeYaml(domainWatch, testConfigFile)
 
 	s := NewWatchDogServer(testConfigFile)
-	err := s.checkDomains()
+	err := s.CheckDomains()
 	if err != nil {
 		t.Errorf("Error in getting domain information (%v)", err)
 	}
