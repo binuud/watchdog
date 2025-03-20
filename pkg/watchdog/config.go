@@ -9,9 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func readYaml(fileName string) {
-
-	domainWatch := &watchdog.DomainWatch{}
+func readYaml(fileName string, domainWatch *watchdog.DomainWatch) {
 
 	yamlFile, err := os.ReadFile(fileName)
 	if err != nil {

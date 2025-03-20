@@ -36,7 +36,8 @@ func TestWriteYaml(t *testing.T) {
 func TestReadYaml(t *testing.T) {
 
 	testConfigFile := "testSampleConfig.yaml"
-	readYaml(testConfigFile)
+	domainWatch := &watchdog.DomainWatch{}
+	readYaml(testConfigFile, domainWatch)
 
 	t.Log("No panics seen during read of yaml config")
 }
