@@ -3,6 +3,64 @@ info:
   title: ""
   version: ""
 paths:
+  /v1/watchdog/get:
+    get:
+      operationId: get
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: uuid
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: watchdog.WatchDog.Get response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponse'
+  /v1/watchdog/getAll:
+    get:
+      operationId: getAll
+      responses:
+        "200":
+          description: watchdog.WatchDog.GetAll response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllResponse'
+  /v1/watchdog/getDetails:
+    get:
+      operationId: getDetails
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: uuid
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: watchdog.WatchDog.GetDetails response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDetailsResponse'
+  /v1/watchdog/health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: watchdog.WatchDog.Health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
   /v1/watchdog/reload:
     post:
       operationId: reload
@@ -65,6 +123,52 @@ components:
         whoIsMutatedAt:
           type: integer
           format: int64
+    DomainWatch:
+      type: object
+      properties:
+        name:
+          type: string
+        refreshInterval:
+          type: integer
+          format: int64
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/DomainItem'
+    GetAllResponse:
+      type: object
+      properties:
+        summaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DomainSummary'
+    GetDetailsResponse:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/DomainSummary'
+    GetResponse:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/DomainSummary'
+    HealthResponse:
+      type: object
+      properties:
+        createdAt:
+          type: integer
+          format: int64
+        numDomains:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/HealthResponse.HealthStatus'
+    HealthResponse.HealthStatus:
+      type: string
+      enum:
+        - HealthStatusIgnore
+        - Active
+        - Error
     ReloadRequest:
       type: object
     ReloadResponse:

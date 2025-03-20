@@ -16,6 +16,15 @@ message DomainItem {
   repeated string endpoints = 3;
 }
 
+message DomainWatch {
+  // for display purpose
+  // in future we can have multiple watch lists
+  string name = 1;
+  // interval in seconds
+  int64 refreshInterval = 2;
+  repeated DomainItem domains = 11;
+}
+
 message CertificateStatus {
   enum EnumCertStatus {
     EnumCertStatusIgnore = 0;

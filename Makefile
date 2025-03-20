@@ -56,11 +56,10 @@ protos: ## Buid go and web protos, and swagger openApi json
 	--grpc-gateway-ts_opt generate_unbound_methods=true \
 	--oas_out ./gen/web/v1/watchdog/ \
 	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
-	yq eval ./gen/go/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
+	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 vendor: ## go vendor and tidy
-	go mod tidy
-	go mod vendor	
+	go mod tidy && 	go mod vendor	
 
 test: ## Run tests
 	go test -v ./pkg/...
