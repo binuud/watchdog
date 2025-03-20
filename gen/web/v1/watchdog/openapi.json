@@ -159,6 +159,21 @@
           "WrongCertificate"
         ]
       },
+      "DomainInfo": {
+        "type": "object",
+        "properties": {
+          "ipAddresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "DomainItem": {
         "type": "object",
         "properties": {
@@ -173,6 +188,21 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "DomainRow": {
+        "type": "object",
+        "properties": {
+          "info": {
+            "$ref": "#/components/schemas/DomainInfo"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DomainSummary"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -197,6 +227,13 @@
           "whoIsMutatedAt": {
             "type": "integer",
             "format": "int64"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "httpsRedirect": {
+            "type": "boolean"
           }
         }
       },

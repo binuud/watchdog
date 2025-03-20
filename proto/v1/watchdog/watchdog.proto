@@ -7,7 +7,8 @@ package watchdog;
 
 option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 
-// import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
 
 message DomainItem {
 
@@ -51,6 +52,22 @@ message DomainSummary {
   bool whoIsMutated = 6;
   // when was whois data modified
   int64 whoIsMutatedAt = 7;
+  google.protobuf.Timestamp createdAt = 8;
   // we expect http requests to be redirected to https
   bool httpsRedirect = 11;
+}
+
+// decsriptive information about the domains
+message DomainInfo {
+  repeated string ipAddresses = 1;
+  // any field is not supported when created openApi swagger file
+  // repeated google.protobuf.Any certificates = 2;
+  google.protobuf.Timestamp createdAt = 11;
+}
+
+// used for persisting domain information
+message DomainRow {
+  DomainInfo info = 1;
+  DomainSummary summary = 2;
+  google.protobuf.Timestamp createdAt = 11;
 }

@@ -4,6 +4,8 @@
 * This file is a generated Typescript file for GRPC Gateway, DO NOT MODIFY
 */
 
+import * as GoogleProtobufTimestamp from "../../google/protobuf/timestamp.pb"
+
 export enum CertificateStatusEnumCertStatus {
   EnumCertStatusIgnore = "EnumCertStatusIgnore",
   Valid = "Valid",
@@ -36,4 +38,17 @@ export type DomainSummary = {
   certStatus?: CertificateStatus
   whoIsMutated?: boolean
   whoIsMutatedAt?: string
+  createdAt?: GoogleProtobufTimestamp.Timestamp
+  httpsRedirect?: boolean
+}
+
+export type DomainInfo = {
+  ipAddresses?: string[]
+  createdAt?: GoogleProtobufTimestamp.Timestamp
+}
+
+export type DomainRow = {
+  info?: DomainInfo
+  summary?: DomainSummary
+  createdAt?: GoogleProtobufTimestamp.Timestamp
 }
