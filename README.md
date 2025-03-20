@@ -12,8 +12,8 @@ refreshinterval: 86400
 domains:
     - uuid: ""
       name: www.google.com
-      endpoints: []
+      endpoints: ["https://www.google.com"]
     - uuid: ""
-      name: www.dronasys.com
-      endpoints: []
+      name: www.gmail.com
+      endpoints: ["https://www.gmail.com]
 ```
