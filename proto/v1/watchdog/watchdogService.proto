@@ -7,8 +7,8 @@ package watchdog;
 
 option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 
-import "v1/watchdog/watchdog.proto";
 import "google/api/annotations.proto";
+import "v1/watchdog/watchdog.proto";
 
 service WatchDog {
   // when input domain list has modified

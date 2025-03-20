@@ -1,6 +1,9 @@
 package main
 
-import "github.com/sirupsen/logrus"
+import (
+	watchDogServer "github.com/binuud/watchdog/pkg/watchdog"
+	"github.com/sirupsen/logrus"
+)
 
 func main() {
 
@@ -11,5 +14,9 @@ func main() {
  |__|__| |     |    |    |_____  |     | |_____/ |_____| |_____|
                                                                 
     `)
+
+	w := watchDogServer.NewWatchDogServer("config.yaml")
+	w.CheckDomains()
+	w.PrintSummary()
 
 }
