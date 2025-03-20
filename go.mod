@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	golang.org/x/net v0.37.0 // indirect

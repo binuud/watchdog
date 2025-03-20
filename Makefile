@@ -48,15 +48,15 @@ protos: ## Buid go and web protos, and swagger openApi json
 	--go_opt paths=source_relative \
 	--go-grpc_out=./gen/go/ \
 	--go-grpc_opt paths=source_relative \
-	--grpc-gateway_out=./gen/web/ \
+	--grpc-gateway_out=./gen/go/ \
 	--grpc-gateway_opt paths=source_relative \
 	--grpc-gateway_opt generate_unbound_methods=true \
 	--grpc-gateway-ts_out=./gen/web/ \
 	--grpc-gateway-ts_opt paths=source_relative \
 	--grpc-gateway-ts_opt generate_unbound_methods=true \
-	--oas_out ./gen/web/v1/watchdog/ \
 	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
-	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
+##	--oas_out ./gen/web/v1/watchdog/ \
+##yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 vendor: ## go vendor and tidy
 	go mod tidy && 	go mod vendor	

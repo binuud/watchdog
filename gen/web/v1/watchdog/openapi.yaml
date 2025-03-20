@@ -120,6 +120,8 @@ components:
     DomainRow:
       type: object
       properties:
+        domain:
+          $ref: '#/components/schemas/DomainItem'
         info:
           $ref: '#/components/schemas/DomainInfo'
         summary:

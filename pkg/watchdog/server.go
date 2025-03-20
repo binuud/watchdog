@@ -6,12 +6,12 @@ import (
 
 type WatchDogServer struct {
 	DomainWatch *watchdog.DomainWatch
+	Data        []*watchdog.DomainRow
 }
 
 func NewWatchDogServer(fileName string) *WatchDogServer {
-	domainWatch := &watchdog.DomainWatch{}
-	readYaml(fileName, domainWatch)
-	return &WatchDogServer{
-		DomainWatch: domainWatch,
-	}
+
+	serverObj := &WatchDogServer{}
+	return serverObj.initFromConfig(fileName)
+
 }

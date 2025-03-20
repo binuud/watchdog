@@ -7,7 +7,7 @@ package watchdog;
 
 option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 
-import "google/protobuf/any.proto";
+// import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 
 message DomainItem {
@@ -24,6 +24,11 @@ message DomainWatch {
   // interval in seconds
   int64 refreshInterval = 2;
   repeated DomainItem domains = 11;
+}
+
+message EndpointStatus {
+  string endpoint = 1;
+  int64 statusCode = 3;
 }
 
 message CertificateStatus {
@@ -43,12 +48,15 @@ message CertificateStatus {
 // summary message, which can be used to display summary
 // of domain items on Cli or any UI
 message DomainSummary {
+  // domainItem is duplicated here
+  // for easier summarization api
+  // and client can just get the summary data from a single call
   DomainItem domain = 1;
   // is the root url reachable
   bool reachable = 2;
   // does the domain name resolv to an ip
   bool resolvable = 3;
-  CertificateStatus certStatus = 4;
+  repeated CertificateStatus certsStatus = 4;
   bool whoIsMutated = 6;
   // when was whois data modified
   int64 whoIsMutatedAt = 7;
@@ -61,13 +69,16 @@ message DomainSummary {
 message DomainInfo {
   repeated string ipAddresses = 1;
   // any field is not supported when created openApi swagger file
-  // repeated google.protobuf.Any certificates = 2;
+  repeated bytes certificates = 2;
+  repeated EndpointStatus endpointStatuses = 3;
+  string whois = 6;
   google.protobuf.Timestamp createdAt = 11;
 }
 
 // used for persisting domain information
 message DomainRow {
-  DomainInfo info = 1;
-  DomainSummary summary = 2;
+  DomainItem domain = 1;
+  DomainInfo info = 2;
+  DomainSummary summary = 3;
   google.protobuf.Timestamp createdAt = 11;
 }

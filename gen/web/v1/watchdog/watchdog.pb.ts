@@ -25,6 +25,11 @@ export type DomainWatch = {
   domains?: DomainItem[]
 }
 
+export type EndpointStatus = {
+  endpoint?: string
+  statusCode?: string
+}
+
 export type CertificateStatus = {
   status?: CertificateStatusEnumCertStatus
   certValid?: boolean
@@ -35,7 +40,7 @@ export type DomainSummary = {
   domain?: DomainItem
   reachable?: boolean
   resolvable?: boolean
-  certStatus?: CertificateStatus
+  certsStatus?: CertificateStatus[]
   whoIsMutated?: boolean
   whoIsMutatedAt?: string
   createdAt?: GoogleProtobufTimestamp.Timestamp
@@ -44,10 +49,14 @@ export type DomainSummary = {
 
 export type DomainInfo = {
   ipAddresses?: string[]
+  certificates?: Uint8Array[]
+  endpointStatuses?: EndpointStatus[]
+  whois?: string
   createdAt?: GoogleProtobufTimestamp.Timestamp
 }
 
 export type DomainRow = {
+  domain?: DomainItem
   info?: DomainInfo
   summary?: DomainSummary
   createdAt?: GoogleProtobufTimestamp.Timestamp
