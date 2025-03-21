@@ -7,12 +7,26 @@ import (
 	"github.com/binuud/watchdog/gen/go/v1/watchdog"
 	"github.com/binuud/watchdog/pkg/domainUtils"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+type WatchDogService struct {
+	DomainWatch *watchdog.DomainWatch
+	Data        []*watchdog.DomainRow
+}
+
+func NewWatchDogService(fileName string) *WatchDogService {
+
+	serverObj := &WatchDogService{}
+
+	return serverObj.initFromConfig(fileName)
+
+}
 
 // read contents from the config yaml file
 // build the in memory database
 // this allows us to add/delete domains once the server is running
-func (s *WatchDogServer) initFromConfig(fileName string) *WatchDogServer {
+func (s *WatchDogService) initFromConfig(fileName string) *WatchDogService {
 
 	domainWatch := &watchdog.DomainWatch{}
 	readYaml(fileName, domainWatch)
@@ -25,9 +39,11 @@ func (s *WatchDogServer) initFromConfig(fileName string) *WatchDogServer {
 			// domain not in memory
 			// create a new entry for same
 			domainEntry = &watchdog.DomainRow{
-				Domain:  item,
-				Info:    &watchdog.DomainInfo{},
-				Summary: &watchdog.DomainSummary{},
+				Domain: item,
+				Info:   &watchdog.DomainInfo{},
+				Summary: &watchdog.DomainSummary{
+					Domain: item,
+				},
 			}
 		} else {
 			logrus.Fatalf("Remove duplicate domain entry %s", item.Name)
@@ -35,11 +51,12 @@ func (s *WatchDogServer) initFromConfig(fileName string) *WatchDogServer {
 		domainEntries = append(domainEntries, domainEntry)
 
 	}
+	s.DomainWatch = domainWatch
 	s.Data = domainEntries
 	return s
 }
 
-func (s *WatchDogServer) CheckDomains() error {
+func (s *WatchDogService) CheckDomains() error {
 
 	for _, domainEntry := range s.Data {
 
@@ -57,7 +74,7 @@ func (s *WatchDogServer) CheckDomains() error {
 
 // get the domain row corresponding to the given domain name
 // from the data object
-func (s *WatchDogServer) getDomainEntry(domainName string) *watchdog.DomainRow {
+func (s *WatchDogService) getDomainEntry(domainName string) *watchdog.DomainRow {
 	for _, item := range s.Data {
 		if domainName == item.Domain.Name {
 			return item
@@ -68,7 +85,7 @@ func (s *WatchDogServer) getDomainEntry(domainName string) *watchdog.DomainRow {
 
 // get domain details like certificates
 // ip resolv and reachablilty of a domain
-func (s *WatchDogServer) getDomainDetails(domainEntry *watchdog.DomainRow) {
+func (s *WatchDogService) getDomainDetails(domainEntry *watchdog.DomainRow) {
 
 	domain := domainEntry.Domain
 	endpointStatuses := make([]*watchdog.EndpointStatus, 0)
@@ -110,15 +127,37 @@ func (s *WatchDogServer) getDomainDetails(domainEntry *watchdog.DomainRow) {
 
 }
 
-func (s *WatchDogServer) summarize(domainEntry *watchdog.DomainRow) {
+func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
 	// fetch and analyse the certificates
+	domainEntry.Summary.CreatedAt = timestamppb.Now()
+
+	if len(domainEntry.Info.IpAddresses) > 0 {
+		domainEntry.Summary.Resolvable = true
+	} else {
+		domainEntry.Summary.Resolvable = false
+	}
+
+	// reachable endpoints
+	reachable := 0
+	for _, item := range domainEntry.Info.EndpointStatuses {
+		if item.StatusCode >= 200 && item.StatusCode < 300 {
+			reachable++
+		}
+	}
+
+	if reachable == len(domainEntry.Info.EndpointStatuses) && reachable > 0 {
+		domainEntry.Summary.Reachable = true
+	} else {
+		domainEntry.Summary.Reachable = false
+	}
+
 	err := s.analyseCertificates(domainEntry)
 	if err != nil {
 		logrus.Errorf("error when checking certificated of domain %s, %v", domainEntry.Domain.Name, err)
 	}
 }
 
-func (s *WatchDogServer) analyseCertificates(domainEntry *watchdog.DomainRow) error {
+func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) error {
 
 	domainEntry.Summary.CertsStatus = nil
 	for _, certRaw := range domainEntry.Info.Certificates {
@@ -157,7 +196,7 @@ func (s *WatchDogServer) analyseCertificates(domainEntry *watchdog.DomainRow) er
 
 }
 
-func (s *WatchDogServer) PrintSummary() {
+func (s *WatchDogService) PrintSummary() {
 	logrus.Print("PrintSummary")
 	logrus.Printf("%-20s %10s %10s %30s", "Domain", "CertExpiry", "Status", "IP")
 	for _, domainEntry := range s.Data {
@@ -167,4 +206,13 @@ func (s *WatchDogServer) PrintSummary() {
 			domainEntry.Info.IpAddresses,
 		)
 	}
+}
+
+func (s *WatchDogService) GetByNameOrUUID(name string, uuid string) *watchdog.DomainRow {
+	for _, item := range s.Data {
+		if item.Domain.Name == name || item.Domain.Uuid == uuid {
+			return item
+		}
+	}
+	return nil
 }

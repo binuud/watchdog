@@ -30,7 +30,7 @@ service WatchDog {
       get : "/v1/watchdog/getDetails"
     };
   }
-  rpc GetAll(GetAllRequest) returns (GetAllResponse) {
+  rpc ListSummaries(ListSummariesRequest) returns (ListSummariesResponse) {
     option (google.api.http) = {
       get : "/v1/watchdog/getAll"
     };
@@ -60,9 +60,18 @@ message GetDetailsRequest {
 
 message GetDetailsResponse { DomainSummary summary = 1; }
 
-message GetAllRequest {}
+message ListSummariesRequest {
+  // current page, page starts from 1
+  int64 page = 1;
+  // number of items per page
+  int64 perPage = 2;
+}
 
-message GetAllResponse { repeated DomainSummary summaries = 1; }
+message ListSummariesResponse {
+  int64 page = 1;
+  int64 perPage = 2;
+  repeated DomainSummary summaries = 3;
+}
 
 message HealthRequest {}
 

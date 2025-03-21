@@ -37,10 +37,14 @@ export type GetDetailsResponse = {
   summary?: WatchdogWatchdog.DomainSummary
 }
 
-export type GetAllRequest = {
+export type ListSummariesRequest = {
+  page?: string
+  perPage?: string
 }
 
-export type GetAllResponse = {
+export type ListSummariesResponse = {
+  page?: string
+  perPage?: string
   summaries?: WatchdogWatchdog.DomainSummary[]
 }
 
@@ -63,8 +67,8 @@ export class WatchDog {
   static GetDetails(req: GetDetailsRequest, initReq?: fm.InitReq): Promise<GetDetailsResponse> {
     return fm.fetchReq<GetDetailsRequest, GetDetailsResponse>(`/v1/watchdog/getDetails?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})
   }
-  static GetAll(req: GetAllRequest, initReq?: fm.InitReq): Promise<GetAllResponse> {
-    return fm.fetchReq<GetAllRequest, GetAllResponse>(`/v1/watchdog/getAll?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})
+  static ListSummaries(req: ListSummariesRequest, initReq?: fm.InitReq): Promise<ListSummariesResponse> {
+    return fm.fetchReq<ListSummariesRequest, ListSummariesResponse>(`/v1/watchdog/getAll?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})
   }
   static Health(req: HealthRequest, initReq?: fm.InitReq): Promise<HealthResponse> {
     return fm.fetchReq<HealthRequest, HealthResponse>(`/v1/watchdog/health?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})

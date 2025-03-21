@@ -39,8 +39,11 @@ build: ## Build docker image
 build-binary: ## Build the watchDog project
 	go build .
 
-run: ## Run code once, for auto run on code change, use make run-watch
+run: ## Run code once, for auto run on code change
 	go run services/watchdog/cmd/main.go
+
+run-server: ## Start GRPC and HTTP server
+	go run services/watchdogServer/cmd/main.go
 
 protos: ## Buid go and web protos, and swagger openApi json
 	$(PROTOC) -I=./proto/.  \
