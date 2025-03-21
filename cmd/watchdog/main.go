@@ -16,7 +16,8 @@ func main() {
 	// Parse the flags
 	flag.Parse()
 
-	fmt.Println("usage: watchdog [filename-with-path]")
+	fmt.Println("usage: watchdog --file [filename-with-path]")
+	fmt.Printf("\n Using config file %s", *fileName)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
 	logrus.Printf(`
