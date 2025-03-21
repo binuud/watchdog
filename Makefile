@@ -40,10 +40,10 @@ build-binary: ## Build the watchDog project
 	go build .
 
 run: ## Run code once, for auto run on code change
-	go run services/watchdog/cmd/main.go
+	go run cmd/watchdog/main.go
 
 run-server: ## Start GRPC and HTTP server
-	go run services/watchdogServer/cmd/main.go
+	go run cmd/watchdogServer/main.go
 
 protos: ## Buid go and web protos, and swagger openApi json
 	$(PROTOC) -I=./proto/.  \
