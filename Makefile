@@ -72,3 +72,6 @@ testCoverage: ## Run test coverage
 
 release: ## for releasing the package
 	goreleaser release	
+
+release-check: ## run release build, but do not publish
+	goreleaser release --snapshot	
