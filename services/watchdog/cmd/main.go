@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	// created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
+	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
 	logrus.Printf(`
  _  _  _ _______ _______ _______ _     _ ______   _____   ______
  |  |  | |_____|    |    |       |_____| |     \ |     | |  ____
@@ -15,7 +15,7 @@ func main() {
                                                                 
     `)
 
-	w := watchDogServer.NewWatchDogServer("config.yaml")
+	w := watchDogServer.NewWatchDogService("config.yaml")
 	w.CheckDomains()
 	w.PrintSummary()
 

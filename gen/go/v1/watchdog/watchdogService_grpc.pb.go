@@ -24,11 +24,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WatchDog_Reload_FullMethodName     = "/watchdog.WatchDog/Reload"
-	WatchDog_Get_FullMethodName        = "/watchdog.WatchDog/Get"
-	WatchDog_GetDetails_FullMethodName = "/watchdog.WatchDog/GetDetails"
-	WatchDog_GetAll_FullMethodName     = "/watchdog.WatchDog/GetAll"
-	WatchDog_Health_FullMethodName     = "/watchdog.WatchDog/Health"
+	WatchDog_Reload_FullMethodName        = "/watchdog.WatchDog/Reload"
+	WatchDog_Get_FullMethodName           = "/watchdog.WatchDog/Get"
+	WatchDog_GetDetails_FullMethodName    = "/watchdog.WatchDog/GetDetails"
+	WatchDog_ListSummaries_FullMethodName = "/watchdog.WatchDog/ListSummaries"
+	WatchDog_Health_FullMethodName        = "/watchdog.WatchDog/Health"
 )
 
 // WatchDogClient is the client API for WatchDog service.
@@ -41,7 +41,7 @@ type WatchDogClient interface {
 	Reload(ctx context.Context, in *ReloadRequest, opts ...grpc.CallOption) (*ReloadResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetDetails(ctx context.Context, in *GetDetailsRequest, opts ...grpc.CallOption) (*GetDetailsResponse, error)
-	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	ListSummaries(ctx context.Context, in *ListSummariesRequest, opts ...grpc.CallOption) (*ListSummariesResponse, error)
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
@@ -83,10 +83,10 @@ func (c *watchDogClient) GetDetails(ctx context.Context, in *GetDetailsRequest, 
 	return out, nil
 }
 
-func (c *watchDogClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *watchDogClient) ListSummaries(ctx context.Context, in *ListSummariesRequest, opts ...grpc.CallOption) (*ListSummariesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, WatchDog_GetAll_FullMethodName, in, out, cOpts...)
+	out := new(ListSummariesResponse)
+	err := c.cc.Invoke(ctx, WatchDog_ListSummaries_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ type WatchDogServer interface {
 	Reload(context.Context, *ReloadRequest) (*ReloadResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetDetails(context.Context, *GetDetailsRequest) (*GetDetailsResponse, error)
-	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	ListSummaries(context.Context, *ListSummariesRequest) (*ListSummariesResponse, error)
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedWatchDogServer()
 }
@@ -134,8 +134,8 @@ func (UnimplementedWatchDogServer) Get(context.Context, *GetRequest) (*GetRespon
 func (UnimplementedWatchDogServer) GetDetails(context.Context, *GetDetailsRequest) (*GetDetailsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDetails not implemented")
 }
-func (UnimplementedWatchDogServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+func (UnimplementedWatchDogServer) ListSummaries(context.Context, *ListSummariesRequest) (*ListSummariesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSummaries not implemented")
 }
 func (UnimplementedWatchDogServer) Health(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Health not implemented")
@@ -215,20 +215,20 @@ func _WatchDog_GetDetails_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WatchDog_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllRequest)
+func _WatchDog_ListSummaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSummariesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WatchDogServer).GetAll(ctx, in)
+		return srv.(WatchDogServer).ListSummaries(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WatchDog_GetAll_FullMethodName,
+		FullMethod: WatchDog_ListSummaries_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WatchDogServer).GetAll(ctx, req.(*GetAllRequest))
+		return srv.(WatchDogServer).ListSummaries(ctx, req.(*ListSummariesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -271,8 +271,8 @@ var WatchDog_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _WatchDog_GetDetails_Handler,
 		},
 		{
-			MethodName: "GetAll",
-			Handler:    _WatchDog_GetAll_Handler,
+			MethodName: "ListSummaries",
+			Handler:    _WatchDog_ListSummaries_Handler,
 		},
 		{
 			MethodName: "Health",
