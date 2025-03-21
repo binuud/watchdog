@@ -69,3 +69,6 @@ test: ## Run tests
 
 testCoverage: ## Run test coverage
 	go test ./pkg/... -coverprofile=coverage.out
+
+release: ## for releasing the package
+	goreleaser release	
