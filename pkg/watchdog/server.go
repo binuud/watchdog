@@ -38,6 +38,18 @@ func (s *WatchDogGRPCServer) Get(ctx context.Context, in *protoV1.GetRequest) (*
 
 }
 
+func (s *WatchDogGRPCServer) GetDetails(ctx context.Context, in *protoV1.GetDetailsRequest) (*protoV1.GetDetailsResponse, error) {
+
+	entry := s.Service.GetByNameOrUUID(in.Name, in.Uuid)
+	if entry == nil {
+		return nil, fmt.Errorf("no entry found for the domain")
+	}
+	return &protoV1.GetDetailsResponse{
+		Domain: entry,
+	}, nil
+
+}
+
 func (s *WatchDogGRPCServer) ListSummaries(ctx context.Context, in *protoV1.ListSummariesRequest) (*protoV1.ListSummariesResponse, error) {
 
 	if in.Page < 1 {

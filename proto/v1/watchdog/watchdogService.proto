@@ -58,7 +58,7 @@ message GetDetailsRequest {
   string name = 2;
 }
 
-message GetDetailsResponse { DomainSummary summary = 1; }
+message GetDetailsResponse { DomainRow domain = 1; }
 
 message ListSummariesRequest {
   // current page, page starts from 1

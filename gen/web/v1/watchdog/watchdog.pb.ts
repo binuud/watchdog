@@ -45,6 +45,13 @@ export type DomainSummary = {
   whoIsMutatedAt?: string
   createdAt?: GoogleProtobufTimestamp.Timestamp
   httpsRedirect?: boolean
+  numEndpoints?: string
+  validEndpoints?: string
+  numIp?: string
+  numCerts?: string
+  numValidCerts?: string
+  numExpiringCerts?: string
+  numWhoIsUpdates?: string
 }
 
 export type DomainInfo = {

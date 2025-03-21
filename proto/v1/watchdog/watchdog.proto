@@ -63,6 +63,18 @@ message DomainSummary {
   google.protobuf.Timestamp createdAt = 8;
   // we expect http requests to be redirected to https
   bool httpsRedirect = 11;
+  // total number of endpoints configured by the user
+  int64 numEndpoints = 21;
+  // number of endpoints with a success HTTP response code
+  int64 validEndpoints = 22;
+  // number of resolvable ip
+  int64 numIp = 23;
+  // number of certs associated with domain
+  int64 numCerts = 24;
+  int64 numValidCerts = 25;
+  int64 numExpiringCerts = 26;
+  // number of who is updates in last one month
+  int64 numWhoIsUpdates = 27;
 }
 
 // decsriptive information about the domains
