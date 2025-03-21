@@ -15,10 +15,18 @@ domains:
       name: www.gmail.com
       endpoints: ["https://www.gmail.com"]
 ```
+## INSTALL
 
-## USAGE
+Via go
+```
+go install github.com/binuud/watchdog/cmd/watchdog@latest
+```
+OR
 
 Download the binary from the release folder (https://github.com/binuud/watchdog/releases)
+
+
+## USAGE
 
 create a config.yaml file with the following contents, and place the yaml file as 
 he same directory where you are invoking the binary.
@@ -35,6 +43,7 @@ domains:
 ```
 
 Now run the binary
+
 ```
 ./watchdog
 ```

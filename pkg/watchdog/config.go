@@ -11,6 +11,7 @@ import (
 
 func readYaml(fileName string, domainWatch *watchdog.DomainWatch) {
 
+	logrus.Infof("Reading config file %s", fileName)
 	yamlFile, err := os.ReadFile(fileName)
 	if err != nil {
 		logrus.Fatalf("Cannot read %s, %v", fileName, err)
@@ -35,7 +36,7 @@ func writeYaml(domainWatch *watchdog.DomainWatch, fileName string) {
 	}
 	defer f.Close()
 
-	_, err = io.WriteString(f, string(yamlData))
+	_, err = io.Writer.Write(f, yamlData)
 	if err != nil {
 		logrus.Fatalf("Cannot write %s, %v", fileName, err)
 	}
