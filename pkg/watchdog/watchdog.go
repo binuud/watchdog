@@ -2,6 +2,8 @@ package watchDogServer
 
 import (
 	"crypto/x509"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/binuud/watchdog/gen/go/v1/watchdog"
@@ -209,15 +211,23 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 }
 
 func (s *WatchDogService) PrintSummary() {
-	logrus.Print("PrintSummary")
-	logrus.Printf("%-20s %10s %10s %30s", "Domain", "CertExpiry", "Status", "IP")
+	fmt.Print("\n\nPrintSummary")
+	fmt.Printf("\n%s", strings.Repeat("-", 80))
+	fmt.Printf("\n%-20s %25s  %4s  %12s", "Domain", "Certs           ", "IP ", "Reachability")
+	fmt.Printf("\n%-20s %4s %4s %4s %8s   %4s   (%4s/%-4s)", "", "Tot", "Val", "Exp", "Status", "Num", "Vld", "Tot")
+	fmt.Printf("\n%s", strings.Repeat("-", 80))
 	for _, domainEntry := range s.Data {
-		logrus.Printf("%-20s %10d %10s %30s", domainEntry.Domain.Name,
-			domainEntry.Summary.CertsStatus[0].CertExpiry,
+		fmt.Printf("\n%-20s %4d %4d %4d %8s   %4d   (%4d/%-4d)", domainEntry.Domain.Name,
+			domainEntry.Summary.NumCerts,
+			domainEntry.Summary.NumValidCerts,
+			domainEntry.Summary.NumExpiringCerts,
 			domainEntry.Summary.CertsStatus[0].Status.String(),
-			domainEntry.Info.IpAddresses,
+			len(domainEntry.Info.IpAddresses),
+			domainEntry.Summary.ValidEndpoints,
+			domainEntry.Summary.NumEndpoints,
 		)
 	}
+	fmt.Printf("\n\n%s\n\n", strings.Repeat("-", 80))
 }
 
 func (s *WatchDogService) GetByNameOrUUID(name string, uuid string) *watchdog.DomainRow {

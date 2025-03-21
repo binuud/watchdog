@@ -2,9 +2,6 @@
 Watchdog - watches domains and certificates for expiry and connectivity.
 
 
-## NOT READY FOR CONSUMPTION
-
-
 Sample Yaml file
 Sub domains have to be treated as seperate entries
 ```
