@@ -136,14 +136,17 @@ func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
 	} else {
 		domainEntry.Summary.Resolvable = false
 	}
+	domainEntry.Summary.NumIp = int64(len(domainEntry.Info.IpAddresses))
 
 	// reachable endpoints
 	reachable := 0
 	for _, item := range domainEntry.Info.EndpointStatuses {
-		if item.StatusCode >= 200 && item.StatusCode < 300 {
+		if item.StatusCode >= 100 && item.StatusCode < 400 {
 			reachable++
 		}
 	}
+	domainEntry.Summary.NumEndpoints = int64(len(domainEntry.Domain.Endpoints))
+	domainEntry.Summary.ValidEndpoints = int64(reachable)
 
 	if reachable == len(domainEntry.Info.EndpointStatuses) && reachable > 0 {
 		domainEntry.Summary.Reachable = true
@@ -155,11 +158,14 @@ func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
 	if err != nil {
 		logrus.Errorf("error when checking certificated of domain %s, %v", domainEntry.Domain.Name, err)
 	}
+
 }
 
 func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) error {
 
 	domainEntry.Summary.CertsStatus = nil
+	validCertCount := 0
+	expiringCertCount := 0
 	for _, certRaw := range domainEntry.Info.Certificates {
 
 		cert, err := x509.ParseCertificate(certRaw)
@@ -181,17 +187,23 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 		if err != nil {
 			certSummary.CertValid = false
 			certSummary.Status = watchdog.CertificateStatus_WrongCertificate
+		} else {
+			validCertCount++
 		}
 		if certExpiry < 10 {
 			// need to warn
+			expiringCertCount++
 			certSummary.Status = watchdog.CertificateStatus_Expiring
 			logrus.Warnf("Certificate expires soon for domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
 		} else {
 			// logrus.Printf("Certificate valid domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
 		}
 		domainEntry.Summary.CertsStatus = append(domainEntry.Summary.CertsStatus, certSummary)
-	}
 
+	}
+	domainEntry.Summary.NumCerts = int64(len(domainEntry.Info.Certificates))
+	domainEntry.Summary.NumValidCerts = int64(validCertCount)
+	domainEntry.Summary.NumExpiringCerts = int64(expiringCertCount)
 	return nil
 
 }

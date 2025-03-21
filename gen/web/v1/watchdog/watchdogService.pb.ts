@@ -34,7 +34,7 @@ export type GetDetailsRequest = {
 }
 
 export type GetDetailsResponse = {
-  summary?: WatchdogWatchdog.DomainSummary
+  domain?: WatchdogWatchdog.DomainRow
 }
 
 export type ListSummariesRequest = {
