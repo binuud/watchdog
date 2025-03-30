@@ -40,6 +40,9 @@ build-binary: ## Build the watchDog project
 	go build .
 
 run: ## Run code once, for auto run on code change
+	go run cmd/watchdog/main.go 
+
+run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go --file $(PWD)/local/myDomains.yaml
 
 run-server: ## Start GRPC and HTTP server
