@@ -1,4 +1,4 @@
-name: TestConfig
+name: MyDomains
 refreshinterval: 86400
 domains:
     - uuid: ""
@@ -9,3 +9,12 @@ domains:
       name: www.gmail.com
       endpoints:
         - https://www.gmail.com
+    - uuid: ""
+      name: www.apple.com
+      endpoints:
+        - https://www.apple.com
+    - uuid: ""
+      name: www.dronasys.com
+      endpoints:
+        - https://www.dronasys.com
+   

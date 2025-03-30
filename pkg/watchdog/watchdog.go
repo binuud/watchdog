@@ -2,8 +2,6 @@ package watchDogServer
 
 import (
 	"crypto/x509"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/binuud/watchdog/gen/go/v1/watchdog"
@@ -168,6 +166,8 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 	domainEntry.Summary.CertsStatus = nil
 	validCertCount := 0
 	expiringCertCount := 0
+	leastExpiry := 64000
+
 	for _, certRaw := range domainEntry.Info.Certificates {
 
 		cert, err := x509.ParseCertificate(certRaw)
@@ -192,6 +192,9 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 		} else {
 			validCertCount++
 		}
+		if certExpiry < int64(leastExpiry) {
+			leastExpiry = int(certExpiry)
+		}
 		if certExpiry < 10 {
 			// need to warn
 			expiringCertCount++
@@ -206,28 +209,9 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 	domainEntry.Summary.NumCerts = int64(len(domainEntry.Info.Certificates))
 	domainEntry.Summary.NumValidCerts = int64(validCertCount)
 	domainEntry.Summary.NumExpiringCerts = int64(expiringCertCount)
+	domainEntry.Summary.LeastExpiryInDays = int64(leastExpiry)
 	return nil
 
-}
-
-func (s *WatchDogService) PrintSummary() {
-	fmt.Print("\n\nPrintSummary")
-	fmt.Printf("\n%s", strings.Repeat("-", 80))
-	fmt.Printf("\n%-20s %25s  %4s  %12s", "Domain", "Certs           ", "IP ", "Reachability")
-	fmt.Printf("\n%-20s %4s %4s %4s %8s   %4s   (%4s/%-4s)", "", "Tot", "Val", "Exp", "Status", "Num", "Vld", "Tot")
-	fmt.Printf("\n%s", strings.Repeat("-", 80))
-	for _, domainEntry := range s.Data {
-		fmt.Printf("\n%-20s %4d %4d %4d %8s   %4d   (%4d/%-4d)", domainEntry.Domain.Name,
-			domainEntry.Summary.NumCerts,
-			domainEntry.Summary.NumValidCerts,
-			domainEntry.Summary.NumExpiringCerts,
-			domainEntry.Summary.CertsStatus[0].Status.String(),
-			len(domainEntry.Info.IpAddresses),
-			domainEntry.Summary.ValidEndpoints,
-			domainEntry.Summary.NumEndpoints,
-		)
-	}
-	fmt.Printf("\n\n%s\n\n", strings.Repeat("-", 80))
 }
 
 func (s *WatchDogService) GetByNameOrUUID(name string, uuid string) *watchdog.DomainRow {

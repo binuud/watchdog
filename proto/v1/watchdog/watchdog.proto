@@ -73,8 +73,12 @@ message DomainSummary {
   int64 numCerts = 24;
   int64 numValidCerts = 25;
   int64 numExpiringCerts = 26;
+  // in all the certificates, what is the least expiring days
+  // if there are 3 certiciates cert1 in 10 days, cert2 in 2 days, cert 3 in 100
+  // days, then leastExpiryInDays will be 2 days
+  int64 leastExpiryInDays = 27;
   // number of who is updates in last one month
-  int64 numWhoIsUpdates = 27;
+  int64 numWhoIsUpdates = 31;
 }
 
 // decsriptive information about the domains

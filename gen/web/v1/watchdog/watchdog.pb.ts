@@ -51,6 +51,7 @@ export type DomainSummary = {
   numCerts?: string
   numValidCerts?: string
   numExpiringCerts?: string
+  leastExpiryInDays?: string
   numWhoIsUpdates?: string
 }
 

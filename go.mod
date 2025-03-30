@@ -12,6 +12,12 @@ require (
 )
 
 require (
+	github.com/mattn/go-runewidth v0.0.16 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
+)
+
+require (
+	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	golang.org/x/net v0.37.0 // indirect
