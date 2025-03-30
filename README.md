@@ -47,7 +47,6 @@ Now run the binary
 ```
 watchdog --file [PATH-TO-FILE]/config.yaml
 ```
-Note: The binary has to be invoked from the same path, as where the config.yaml file is placed
 
 Sample Output
 ```
