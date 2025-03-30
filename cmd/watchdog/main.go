@@ -5,10 +5,13 @@ import (
 	"fmt"
 
 	watchDogServer "github.com/binuud/watchdog/pkg/watchdog"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.WarnLevel)
 
 	// Define a string flag for the file name
 	fileName := flag.String("file", "config.yaml", "Name of the config file (config.yaml) (optional)")
@@ -17,10 +20,12 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("usage: watchdog --file [filename-with-path]")
-	fmt.Printf("\n Using config file %s", *fileName)
+	fmt.Println("Using config file ", *fileName)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
-	logrus.Printf(`
+	fmt.Println(`
+
+
  _  _  _ _______ _______ _______ _     _ ______   _____   ______
  |  |  | |_____|    |    |       |_____| |     \ |     | |  ____
  |__|__| |     |    |    |_____  |     | |_____/ |_____| |_____|
@@ -29,6 +34,7 @@ func main() {
 
 	w := watchDogServer.NewWatchDogService(*fileName)
 	w.CheckDomains()
-	w.PrintSummary()
+	// w.PrintSummary() // normal print blocks
+	w.PrintSummaryTable() // uses 3rd party pretty table
 
 }
