@@ -88,3 +88,16 @@ Then checks all the certificates associated with the domain, checks if the domai
 Marks the certificate as expiring, if the expiry date is in a 10 day window (from today).
 Also displays the number of IPv4 and IPv6 addresses associated with the domain
 
+
+## Using docker image
+
+When using docker image, the default entrypoint of the docker image is the server. So if you want to 
+run once, use the following command
+```
+docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
+```
+
+To start the grpc and http server 
+```
+docker run --name WatchDog -p 10090:9090 -p 10080:9080 -v  "./config.yaml:/configs/config.yaml" dronasys/watchdog -d
+```
