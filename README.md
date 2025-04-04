@@ -42,6 +42,13 @@ domains:
       endpoints: ["https://www.gmail.com"]
 ```
 
+sample entry for subdomain
+```
+    - uuid: ""
+      name: dev.example.com
+      endpoints: ["https://dev.example.com"]
+```
+
 Now run the binary
 
 ```
@@ -80,3 +87,4 @@ For each domain, it checks the number of endpoints which are reachable.
 Then checks all the certificates associated with the domain, checks if the domain association is proper.
 Marks the certificate as expiring, if the expiry date is in a 10 day window (from today).
 Also displays the number of IPv4 and IPv6 addresses associated with the domain
+

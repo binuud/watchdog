@@ -67,7 +67,7 @@ func runGRPCServer() {
 
 	insecureServer := grpc.NewServer()
 
-	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer("config.yaml"))
+	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer("/configs/config.yaml"))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(insecureServer)
@@ -86,7 +86,7 @@ func main() {
 	logrus.Infof("GRPC Port - (%d), HTTP Port - (%v)", *server_grpc_port, *server_http_port)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
-	logrus.Printf(`
+	fmt.Println(`
     _  _  _ _______ _______ _______ _     _ ______   _____   ______
     |  |  | |_____|    |    |       |_____| |     \ |     | |  ____
     |__|__| |     |    |    |_____  |     | |_____/ |_____| |_____|

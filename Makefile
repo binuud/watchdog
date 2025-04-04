@@ -4,13 +4,17 @@
 # You can change the default config with `make cnf="config_special.env" build`
 # use build_staging.env for staging server (local too)
 
-REPO=binuud
+
+
+### WARNING ### NOT-A-PRIVATE-REPO ##########
+
+
+
+REPO=dronasys
 APP_NAME ?= watchdog
 
-
 BUILD_VER ?= v0.0.1
-
-DOCKER_HUB_TAG ?= v1.0.1
+DOCKER_HUB_TAG ?= v0.0.1
 
 TAGGED_NAME = $(REPO)/$(APP_NAME)
 
@@ -39,6 +43,12 @@ build: ## Build docker image
 build-binary: ## Build the watchDog project
 	go build .
 
+deploy: ## Deploy all images to docker hub
+	@echo "====================> Pushing image to dockerhub (PUBLIC) ."
+## @docker login --username=$(DOCKER_HUB_USER) --password="$(DOCKER_HUB_PASSWD)"
+	docker tag $(REPO)/${APP_NAME} $(REPO)/${APP_NAME}:$(DOCKER_HUB_TAG)
+	docker push $(REPO)/${APP_NAME}:$(DOCKER_HUB_TAG)
+
 run: ## Run code once, for auto run on code change
 	go run cmd/watchdog/main.go 
 
@@ -46,7 +56,10 @@ run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go --file $(PWD)/local/myDomains.yaml
 
 run-server: ## Start GRPC and HTTP server
-	go run cmd/watchdogServer/main.go
+	go run cmd/watchdogServer/main.go -grpc_port 10090 -http_port 10080
+
+run-docker: ## run docker image
+	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
 
 protos: ## Buid go and web protos, and swagger openApi json
 	$(PROTOC) -I=./proto/.  \
