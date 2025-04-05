@@ -57,9 +57,9 @@ protos: ## Buid go and web protos, and swagger openApi json
 	--grpc-gateway-ts_out=./gen/web/ \
 	--grpc-gateway-ts_opt paths=source_relative \
 	--grpc-gateway-ts_opt generate_unbound_methods=true \
+	--oas_out ./gen/web/v1/watchdog/ \
 	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
-##	--oas_out ./gen/web/v1/watchdog/ \
-##yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
+	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 run: ## Run code once, for auto run on code change
 	go run cmd/watchdog/main.go --file $(PWD)/config.yaml
@@ -73,7 +73,8 @@ run-server: ## Start GRPC and HTTP server
 run-docker: ## run docker image
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
 
-
+swagger-ui: ## launch swagger ui
+	docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.json -e SWAGGER_FILE=/tmp/swagger.json docker.swagger.io/swaggerapi/swagger-editor
 
 vendor: ## go vendor and tidy
 	echo "tidy + vendor"
@@ -87,6 +88,10 @@ testCoverage: ## Run test coverage
 	go test ./pkg/... -coverprofile=coverage.out
 
 release: ## for releasing the package
+## comments for reference
+# git tag -a v0.1.0 -m "Release COMMENT"
+# git push origin [version]
+# export GITHUB_TOKEN="YOUR_GH_TOKEN"
 	goreleaser release	
 
 release-check: ## run release build, but do not publish
