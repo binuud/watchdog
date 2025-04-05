@@ -40,14 +40,32 @@
     },
     "/v1/watchdog/getAll": {
       "get": {
-        "operationId": "getAll",
+        "operationId": "listSummaries",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "watchdog.WatchDog.GetAll response",
+            "description": "watchdog.WatchDog.ListSummaries response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetAllResponse"
+                  "$ref": "#/components/schemas/ListSummariesResponse"
                 }
               }
             }
@@ -168,6 +186,22 @@
               "type": "string"
             }
           },
+          "certificates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "base64"
+            }
+          },
+          "endpointStatuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EndpointStatus"
+            }
+          },
+          "whois": {
+            "type": "string"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -181,6 +215,9 @@
             "type": "string"
           },
           "name": {
+            "type": "string"
+          },
+          "domainName": {
             "type": "string"
           },
           "endpoints": {
@@ -221,8 +258,50 @@
           "resolvable": {
             "type": "boolean"
           },
-          "certStatus": {
-            "$ref": "#/components/schemas/CertificateStatus"
+          "certsStatus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CertificateStatus"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "httpsRedirect": {
+            "type": "boolean"
+          },
+          "numEndpoints": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "validEndpoints": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numIp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numCerts": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numValidCerts": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numExpiringCerts": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "leastCertExpiryInDays": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numWhoIsUpdates": {
+            "type": "integer",
+            "format": "int64"
           },
           "whoIsMutated": {
             "type": "boolean"
@@ -231,12 +310,20 @@
             "type": "integer",
             "format": "int64"
           },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "whoIsMutatedDays": {
+            "type": "integer",
+            "format": "int64"
           },
-          "httpsRedirect": {
+          "domainExpiring": {
             "type": "boolean"
+          },
+          "domainExpiryAt": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "domainExpiryDays": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -258,22 +345,23 @@
           }
         }
       },
-      "GetAllResponse": {
+      "EndpointStatus": {
         "type": "object",
         "properties": {
-          "summaries": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DomainSummary"
-            }
+          "endpoint": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
       "GetDetailsResponse": {
         "type": "object",
         "properties": {
-          "summary": {
-            "$ref": "#/components/schemas/DomainSummary"
+          "domain": {
+            "$ref": "#/components/schemas/DomainRow"
           }
         }
       },
@@ -308,6 +396,25 @@
           "Active",
           "Error"
         ]
+      },
+      "ListSummariesResponse": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "perPage": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "summaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DomainSummary"
+            }
+          }
+        }
       },
       "ReloadRequest": {
         "type": "object"
