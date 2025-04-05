@@ -15,14 +15,16 @@ func createDomainWatch() *watchdog.DomainWatch {
 	domains := make([]*watchdog.DomainItem, 0)
 
 	domainItem := &watchdog.DomainItem{
-		Name:      "www.google.com",
-		Endpoints: []string{"https://www.google.com"},
+		Name:       "www.google.com",
+		DomainName: "google.com",
+		Endpoints:  []string{"https://www.google.com"},
 	}
 	domains = append(domains, domainItem)
 
 	domainItem = &watchdog.DomainItem{
-		Name:      "www.gmail.com",
-		Endpoints: []string{"https://www.gmail.com"},
+		Name:       "www.gmail.com",
+		DomainName: "gmail.com",
+		Endpoints:  []string{"https://www.gmail.com"},
 	}
 	domains = append(domains, domainItem)
 	domainWatch.Domains = domains

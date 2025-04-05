@@ -17,12 +17,14 @@ func TestWriteYaml(t *testing.T) {
 	domains := make([]*watchdog.DomainItem, 0)
 
 	domainItem := &watchdog.DomainItem{
-		Name: "www.google.com",
+		Name:       "www.google.com",
+		DomainName: "google.com",
 	}
 	domains = append(domains, domainItem)
 
 	domainItem = &watchdog.DomainItem{
-		Name: "www.gmail.com",
+		Name:       "www.gmail.com",
+		DomainName: "gmail.com",
 	}
 	domains = append(domains, domainItem)
 	domainWatch.Domains = domains
@@ -38,6 +40,11 @@ func TestReadYaml(t *testing.T) {
 	testConfigFile := "testSampleConfig.yaml"
 	domainWatch := &watchdog.DomainWatch{}
 	readYaml(testConfigFile, domainWatch)
+	for _, item := range domainWatch.Domains {
+		if item.Name == "" || item.DomainName == "" {
+			t.Error("Cannot read from yaml file")
+		}
+	}
 
 	t.Log("No panics seen during read of yaml config")
 }

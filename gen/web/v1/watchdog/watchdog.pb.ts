@@ -16,6 +16,7 @@ export enum CertificateStatusEnumCertStatus {
 export type DomainItem = {
   uuid?: string
   name?: string
+  domainName?: string
   endpoints?: string[]
 }
 
@@ -41,8 +42,6 @@ export type DomainSummary = {
   reachable?: boolean
   resolvable?: boolean
   certsStatus?: CertificateStatus[]
-  whoIsMutated?: boolean
-  whoIsMutatedAt?: string
   createdAt?: GoogleProtobufTimestamp.Timestamp
   httpsRedirect?: boolean
   numEndpoints?: string
@@ -51,8 +50,14 @@ export type DomainSummary = {
   numCerts?: string
   numValidCerts?: string
   numExpiringCerts?: string
-  leastExpiryInDays?: string
+  leastCertExpiryInDays?: string
   numWhoIsUpdates?: string
+  whoIsMutated?: boolean
+  whoIsMutatedAt?: string
+  whoIsMutatedDays?: string
+  domainExpiring?: boolean
+  domainExpiryAt?: string
+  domainExpiryDays?: string
 }
 
 export type DomainInfo = {
