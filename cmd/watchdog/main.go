@@ -31,7 +31,7 @@ func main() {
  |__|__| |     |    |    |_____  |     | |_____/ |_____| |_____|
                                                                 
     `)
-
+	fmt.Println("Fetching data... (Single Thread)")
 	w := watchDogServer.NewWatchDogService(*fileName)
 	w.CheckDomains()
 	// w.PrintSummary() // normal print blocks

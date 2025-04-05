@@ -3,18 +3,26 @@ refreshinterval: 86400
 domains:
     - uuid: ""
       name: www.google.com
+      domainname: google.com
       endpoints:
         - https://www.google.com
+        - https://www.google.com/?client=safari
+    - uuid: ""
+      name: mail.google.com
+      endpoints:
+        - https://mail.google.com
     - uuid: ""
       name: www.gmail.com
+      domainname: gmail.com
       endpoints:
         - https://www.gmail.com
     - uuid: ""
       name: www.apple.com
+      domainname: apple.com
       endpoints:
         - https://www.apple.com
     - uuid: ""
       name: www.dronasys.com
+      domainname: dronasys.com
       endpoints:
         - https://www.dronasys.com
-   

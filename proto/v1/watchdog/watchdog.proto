@@ -13,8 +13,11 @@ import "google/protobuf/timestamp.proto";
 message DomainItem {
 
   string uuid = 1;
+  // eg: www.google.com, can be any subdomain too
   string name = 2;
-  repeated string endpoints = 3;
+  // eg: google.com
+  string domainName = 3;
+  repeated string endpoints = 4;
 }
 
 message DomainWatch {
@@ -57,10 +60,8 @@ message DomainSummary {
   // does the domain name resolv to an ip
   bool resolvable = 3;
   repeated CertificateStatus certsStatus = 4;
-  bool whoIsMutated = 6;
-  // when was whois data modified
-  int64 whoIsMutatedAt = 7;
-  google.protobuf.Timestamp createdAt = 8;
+
+  google.protobuf.Timestamp createdAt = 10;
   // we expect http requests to be redirected to https
   bool httpsRedirect = 11;
   // total number of endpoints configured by the user
@@ -76,9 +77,18 @@ message DomainSummary {
   // in all the certificates, what is the least expiring days
   // if there are 3 certiciates cert1 in 10 days, cert2 in 2 days, cert 3 in 100
   // days, then leastExpiryInDays will be 2 days
-  int64 leastExpiryInDays = 27;
+  int64 leastCertExpiryInDays = 27;
   // number of who is updates in last one month
   int64 numWhoIsUpdates = 31;
+  bool whoIsMutated = 32;
+  // when was whois data modified
+  int64 whoIsMutatedAt = 33;
+  int64 whoIsMutatedDays = 34;
+  // set to true when domain is expiring in 10 days
+  bool domainExpiring = 35;
+  // time in seconds when the domain expire
+  int64 domainExpiryAt = 36;
+  int64 domainExpiryDays = 37;
 }
 
 // decsriptive information about the domains
@@ -87,8 +97,8 @@ message DomainInfo {
   // any field is not supported when created openApi swagger file
   repeated bytes certificates = 2;
   repeated EndpointStatus endpointStatuses = 3;
-  string whois = 6;
-  google.protobuf.Timestamp createdAt = 11;
+  string whois = 4;
+  google.protobuf.Timestamp createdAt = 5;
 }
 
 // used for persisting domain information

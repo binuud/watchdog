@@ -6,7 +6,7 @@ import (
 
 	"github.com/binuud/watchdog/gen/go/v1/watchdog"
 	"github.com/binuud/watchdog/pkg/domainUtils"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -18,7 +18,6 @@ type WatchDogService struct {
 func NewWatchDogService(fileName string) *WatchDogService {
 
 	serverObj := &WatchDogService{}
-
 	return serverObj.initFromConfig(fileName)
 
 }
@@ -46,10 +45,10 @@ func (s *WatchDogService) initFromConfig(fileName string) *WatchDogService {
 				},
 			}
 		} else {
-			logrus.Fatalf("Remove duplicate domain entry %s", item.Name)
+			log.Fatalf("Remove duplicate domain entry %s", item.Name)
 		}
 		domainEntries = append(domainEntries, domainEntry)
-
+		//		log.Println(item)
 	}
 	s.DomainWatch = domainWatch
 	s.Data = domainEntries
@@ -99,14 +98,14 @@ func (s *WatchDogService) getDomainDetails(domainEntry *watchdog.DomainRow) {
 			StatusCode: int64(responseCode),
 		}
 		endpointStatuses = append(endpointStatuses, endPointStatus)
-		logrus.Printf("Received response %d %s", responseCode, item)
+		log.Printf("Received response %d %s", responseCode, item)
 	}
 	domainEntry.Info.EndpointStatuses = endpointStatuses
 
 	// fetch the certs
 	certs, err := domainUtils.GetCertificates(domain.Name, 443)
 	if err != nil {
-		logrus.Errorf("error when getting certificate of domain %s, %v", domain.Name, err)
+		log.Errorf("error when getting certificate of domain %s, %v", domain.Name, err)
 	}
 	for _, item := range certs {
 		domainEntry.Info.Certificates = append(domainEntry.Info.Certificates, item.Raw)
@@ -114,22 +113,29 @@ func (s *WatchDogService) getDomainDetails(domainEntry *watchdog.DomainRow) {
 
 	ipAddresses, err := domainUtils.ResolveIP(domain.Name)
 	if err != nil {
-		logrus.Errorf("error when resolving ip of domain %s, %v", domain.Name, err)
+		log.Errorf("error when resolving ip of domain %s, %v", domain.Name, err)
 	}
 
 	// save the ip addresses in the domainRow object
 
 	domainEntry.Info.IpAddresses = nil
 	for _, ipAddr := range ipAddresses {
-		logrus.Printf("Ip address of domain %s %v", domain.Name, ipAddr.String())
+		log.Printf("Ip address of domain %s %v", domain.Name, ipAddr.String())
 		domainEntry.Info.IpAddresses = append(domainEntry.Info.IpAddresses, ipAddr.String())
 	}
 
+	// get WhoIs data
+	err = s.getWhoIsRecord(domainEntry)
+	if err != nil {
+		log.Errorf("error when getting whois for domain %s, %v", domain.Name, err)
+	}
 }
 
 func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
 	// fetch and analyse the certificates
 	domainEntry.Summary.CreatedAt = timestamppb.Now()
+
+	s.summarizeWhoIs(domainEntry)
 
 	if len(domainEntry.Info.IpAddresses) > 0 {
 		domainEntry.Summary.Resolvable = true
@@ -156,7 +162,7 @@ func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
 
 	err := s.analyseCertificates(domainEntry)
 	if err != nil {
-		logrus.Errorf("error when checking certificated of domain %s, %v", domainEntry.Domain.Name, err)
+		log.Errorf("error when checking certificated of domain %s, %v", domainEntry.Domain.Name, err)
 	}
 
 }
@@ -172,7 +178,7 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 
 		cert, err := x509.ParseCertificate(certRaw)
 		if err != nil {
-			logrus.Errorf("cannot parse certificate for domain %s", domainEntry.Domain.Name)
+			log.Errorf("cannot parse certificate for domain %s", domainEntry.Domain.Name)
 		}
 
 		now := time.Now()
@@ -199,9 +205,9 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 			// need to warn
 			expiringCertCount++
 			certSummary.Status = watchdog.CertificateStatus_Expiring
-			logrus.Warnf("Certificate expires soon for domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
+			log.Warnf("Certificate expires soon for domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
 		} else {
-			// logrus.Printf("Certificate valid domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
+			// log.Printf("Certificate valid domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
 		}
 		domainEntry.Summary.CertsStatus = append(domainEntry.Summary.CertsStatus, certSummary)
 
@@ -209,7 +215,7 @@ func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) e
 	domainEntry.Summary.NumCerts = int64(len(domainEntry.Info.Certificates))
 	domainEntry.Summary.NumValidCerts = int64(validCertCount)
 	domainEntry.Summary.NumExpiringCerts = int64(expiringCertCount)
-	domainEntry.Summary.LeastExpiryInDays = int64(leastExpiry)
+	domainEntry.Summary.LeastCertExpiryInDays = int64(leastExpiry)
 	return nil
 
 }
