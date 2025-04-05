@@ -1,20 +1,6 @@
 # watchdog
 Watchdog - watches domains and certificates for expiry and connectivity.
 
-
-Sample Yaml file
-Sub domains have to be treated as seperate entries
-```
-name: TestConfig
-refreshinterval: 86400
-domains:
-    - uuid: ""
-      name: www.google.com
-      endpoints: ["https://www.google.com"]
-    - uuid: ""
-      name: www.gmail.com
-      endpoints: ["https://www.gmail.com"]
-```
 ## INSTALL
 
 Via go
@@ -28,25 +14,39 @@ Download the binary from the release folder (https://github.com/binuud/watchdog/
 
 ## USAGE
 
-create a config.yaml file with the following contents, and place the yaml file as 
-he same directory where you are invoking the binary.
+create a config.yaml file with the following contents.
+
+Sample Yaml file
+Sub domains have to be treated as seperate entries
 ```
-name: TestConfig
+name: MyDomains
 refreshinterval: 86400
 domains:
     - uuid: ""
       name: www.google.com
-      endpoints: ["https://www.google.com"]
+      domainname: google.com
+      endpoints:
+        - https://www.google.com
+        - https://www.google.com/?client=safari
     - uuid: ""
       name: www.gmail.com
-      endpoints: ["https://www.gmail.com"]
+      domainname: gmail.com
+      endpoints:
+        - https://www.gmail.com
+    - uuid: ""
+      name: www.dronasys.com
+      domainname: dronasys.com
+      endpoints:
+        - https://www.dronasys.com
 ```
 
 sample entry for subdomain
 ```
     - uuid: ""
       name: dev.example.com
-      endpoints: ["https://dev.example.com"]
+      endpoints:
+        - https://dev.example.com
+        - https://dev.example.com/test1
 ```
 
 Now run the binary
