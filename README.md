@@ -79,6 +79,8 @@ Download the watchdogServer binary from the release folder (https://github.com/b
 
 ## Usage
 
+Note: whois data caching coming soon, if you run this in loop, whois data providers might block your ip.
+
 create a config.yaml file with the following contents.
 
 Sample Yaml file
@@ -154,6 +156,7 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 * If user base increases, and domain count increases optimize proto file
 * Simple UI
 * MCP server coming soon
+* In server mode, reload api/rpc has to be called by the client, once caching is enabled, watchdog will updates all domain details in fixed interval
 
 ## Credits
 
