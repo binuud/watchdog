@@ -19,7 +19,7 @@ import (
 var (
 	server_grpc_port = flag.Int("grpc_port", 9090, "Watchdog GRPC Serverport, no token required unsecured")
 	server_http_port = flag.Int("http_port", 9080, "Watchdog HTTP Server port, no token required unsecured")
-	config_filename  = flag.String("file", "./configs/config.yaml", "Watchdog HTTP Server port, no token required unsecured")
+	config_filename  = flag.String("file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
 )
 
 // starting the http server from the GPRC generated code
@@ -79,10 +79,7 @@ func runGRPCServer() {
 
 func main() {
 
-	fmt.Println("\nusage: watchdogServer --file [config-yaml-file-with-path] --v")
-	fmt.Println(" --grpc_port  [PORT] Change default grpc port from 9090 to user supplied port")
-	fmt.Println(" --http_port  [PORT] Change default http port from 9080 to user supplied port")
-	fmt.Println(" --v  For verbose logs")
+	fmt.Println("\nusage: watchdogServer -h")
 	fmt.Println(" -h   For Help")
 	fmt.Print("\n\n")
 	pVerbose := flag.Bool("v", false, "Detailed logs")
@@ -98,7 +95,7 @@ func main() {
 
 	fmt.Println("Using config file ", *config_filename)
 
-	log.Info("Giv me one more night !")
+	log.Info("Give me one more night !")
 	log.Info("--------->>>> Starting WatchDog Server Insecure Mode <<<----------")
 	log.Infof("GRPC Port - (%d), HTTP Port - (%v)", *server_grpc_port, *server_http_port)
 
