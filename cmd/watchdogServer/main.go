@@ -4,14 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 
 	protoV1 "github.com/binuud/watchdog/gen/go/v1/watchdog"
 	watchDogServer "github.com/binuud/watchdog/pkg/watchdog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -51,7 +50,7 @@ func runHtppServer() {
 		Handler: gwMux,
 	}
 
-	logrus.Info("HTTP server started")
+	log.Info("HTTP server started")
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	log.Fatalln(gwServer.ListenAndServe())
 
@@ -72,18 +71,27 @@ func runGRPCServer() {
 	// Register reflection service on gRPC server.
 	reflection.Register(insecureServer)
 
-	logrus.Infof("GRPC server starting...(%d)", *server_grpc_port)
-	logrus.Fatalln(insecureServer.Serve(insecureConn))
+	log.Infof("GRPC server starting...(%d)", *server_grpc_port)
+	log.Fatalln(insecureServer.Serve(insecureConn))
 
 }
 
 func main() {
 
+	pVerbose := flag.Bool("v", false, "Explain what's happening while program runs")
+
+	// Parse the flags
 	flag.Parse()
 
-	logrus.Info("Giv me one more night !")
-	logrus.Info("--------->>>> Starting WatchDog Server Insecure Mode <<<----------")
-	logrus.Infof("GRPC Port - (%d), HTTP Port - (%v)", *server_grpc_port, *server_http_port)
+	if !*pVerbose {
+		// Only log the warning severity or above.
+		// if verbose is not set
+		log.SetLevel(log.WarnLevel)
+	}
+
+	log.Info("Giv me one more night !")
+	log.Info("--------->>>> Starting WatchDog Server Insecure Mode <<<----------")
+	log.Infof("GRPC Port - (%d), HTTP Port - (%v)", *server_grpc_port, *server_http_port)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
 	fmt.Println(`

@@ -62,13 +62,13 @@ protos: ## Buid go and web protos, and swagger openApi json
 	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 run: ## Run code once, for auto run on code change
-	go run cmd/watchdog/main.go --file $(PWD)/config.yaml
+	go run cmd/watchdog/main.go -v  -file $(PWD)/config.yaml
 
 run-mydomains: ## Run code once, for list of mydomains
-	go run cmd/watchdog/main.go --file $(PWD)/local/myDomains.yaml
+	go run cmd/watchdog/main.go -file $(PWD)/local/myDomains.yaml
 
 run-server: ## Start GRPC and HTTP server
-	go run cmd/watchdogServer/main.go -grpc_port 10090 -http_port 10080
+	go run cmd/watchdogServer/main.go -v -grpc_port 10090 -http_port 10080
 
 run-docker: ## run docker image
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)

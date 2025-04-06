@@ -36,24 +36,6 @@ func (s *WatchDogService) summarizeWhoIs(d *watchdog.DomainRow) error {
 	log.Println("###################################")
 	log.Printf("Who is summary for %s \n", d.Domain.DomainName)
 	log.Println("###################################")
-	// log.Println(d.Info.Whois)
-	// Print the domain status
-	log.Println(w.Domain.Status)
-
-	// Print the domain created date
-	log.Println(w.Domain.CreatedDate)
-
-	// Print the domain expiration date
-	log.Println(w.Domain.ExpirationDate)
-
-	// Print the registrar name
-	log.Println(w.Registrar.Name)
-
-	// Print the registrant name
-	log.Println(w.Registrant.Name)
-
-	// Print the registrant email address
-	log.Println(w.Registrant.Email)
 
 	// Get the current time
 	currentTime := time.Now()

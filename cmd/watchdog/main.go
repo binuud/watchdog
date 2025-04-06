@@ -10,14 +10,18 @@ import (
 
 func main() {
 
-	// Only log the warning severity or above.
-	log.SetLevel(log.WarnLevel)
-
 	// Define a string flag for the file name
 	fileName := flag.String("file", "config.yaml", "Name of the config file (config.yaml) (optional)")
+	pVerbose := flag.Bool("v", false, "Explain what's happening while program runs")
 
 	// Parse the flags
 	flag.Parse()
+
+	if !*pVerbose {
+		// Only log the warning severity or above.
+		// if verbose is not set
+		log.SetLevel(log.WarnLevel)
+	}
 
 	fmt.Println("usage: watchdog --file [filename-with-path]")
 	fmt.Println("Using config file ", *fileName)
