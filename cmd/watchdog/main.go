@@ -14,7 +14,7 @@ func main() {
 	fmt.Print("\n\n")
 
 	// Define a string flag for the file name
-	fileName := flag.String("file", "config.yaml", "Name of the config file (config.yaml) (optional)")
+	fileName := flag.String("file", "config.yaml", "Config file path (config.yaml) (optional)")
 	pVerbose := flag.Bool("v", false, "Detailed logs")
 
 	// Parse the flags
