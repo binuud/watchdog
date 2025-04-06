@@ -46,7 +46,7 @@ func (s *WatchDogService) PrintSummaryTable() {
 	// total 10 columns
 	t.AppendHeader(table.Row{"Domains", "Domains", "Domains", "Certs", "Certs", "Certs", "Certs", "IP", "Reachable", "Reachable"}, rowConfigAutoMerge)
 	t.AppendHeader(table.Row{"Name/Sub", "Mutated", "Expiry", "Tot", "Valid", "Expiry", "Validity", "(num)", "Valid", "Total"}, rowConfigAutoMerge)
-	t.AppendHeader(table.Row{"", "(Days)", "(Days)", "", "", "(Days)", "", "", "", ""}, rowConfigAutoMerge)
+	t.AppendHeader(table.Row{"", "(Days)", "(Days)", "(Counts)", "(Counts)", "(Days)", "", "(Counts)", "(Counts)", "(Counts)"}, rowConfigAutoMerge)
 	for _, domainEntry := range s.Data {
 
 		domainMutatedString := ""
@@ -56,20 +56,20 @@ func (s *WatchDogService) PrintSummaryTable() {
 			if domainEntry.Summary.WhoIsMutatedDays < 10 {
 				tick = alertTick
 			}
-			domainMutatedString = fmt.Sprintf("%-4d %s", domainEntry.Summary.WhoIsMutatedDays, tick)
+			domainMutatedString = fmt.Sprintf("%4d %2s", domainEntry.Summary.WhoIsMutatedDays, tick)
 
 			tick = greenTick
 			if domainEntry.Summary.DomainExpiryDays < 10 {
 				tick = alertTick
 			}
-			domainExpiryString = fmt.Sprintf("%-4d %s", domainEntry.Summary.DomainExpiryDays, tick)
+			domainExpiryString = fmt.Sprintf("%4d %2s", domainEntry.Summary.DomainExpiryDays, tick)
 		}
 
 		tick := greenTick
 		if domainEntry.Summary.LeastCertExpiryInDays < 10 {
 			tick = alertTick
 		}
-		certExpiryString := fmt.Sprintf("%-4d %s", domainEntry.Summary.LeastCertExpiryInDays, tick)
+		certExpiryString := fmt.Sprintf("%4d %2s", domainEntry.Summary.LeastCertExpiryInDays, tick)
 
 		t.AppendRow(table.Row{domainEntry.Domain.Name,
 			domainMutatedString,
@@ -95,6 +95,7 @@ func (s *WatchDogService) PrintSummaryTable() {
 		{Number: 7, Align: text.AlignCenter, AlignFooter: text.AlignCenter, AlignHeader: text.AlignCenter},
 		{Number: 8, Align: text.AlignCenter, AlignFooter: text.AlignCenter, AlignHeader: text.AlignCenter},
 		{Number: 9, Align: text.AlignCenter, AlignFooter: text.AlignCenter, AlignHeader: text.AlignCenter},
+		{Number: 10, Align: text.AlignCenter, AlignFooter: text.AlignCenter, AlignHeader: text.AlignCenter},
 	})
 	t.AppendFooter(table.Row{"", "", "", "", "", "", "", "", "", ""})
 	t.SetStyle(table.StyleLight)
