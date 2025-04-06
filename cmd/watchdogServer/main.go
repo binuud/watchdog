@@ -19,6 +19,7 @@ import (
 var (
 	server_grpc_port = flag.Int("grpc_port", 9090, "Watchdog GRPC Serverport, no token required unsecured")
 	server_http_port = flag.Int("http_port", 9080, "Watchdog HTTP Server port, no token required unsecured")
+	config_filename  = flag.String("file", "./configs/config.yaml", "Watchdog HTTP Server port, no token required unsecured")
 )
 
 // starting the http server from the GPRC generated code
@@ -66,7 +67,7 @@ func runGRPCServer() {
 
 	insecureServer := grpc.NewServer()
 
-	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer("/configs/config.yaml"))
+	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer(*config_filename))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(insecureServer)
@@ -78,7 +79,13 @@ func runGRPCServer() {
 
 func main() {
 
-	pVerbose := flag.Bool("v", false, "Explain what's happening while program runs")
+	fmt.Println("\nusage: watchdogServer --file [config-yaml-file-with-path] --v")
+	fmt.Println(" --grpc_port  [PORT] Change default grpc port from 9090 to user supplied port")
+	fmt.Println(" --http_port  [PORT] Change default http port from 9080 to user supplied port")
+	fmt.Println(" --v  For verbose logs")
+	fmt.Println(" -h   For Help")
+	fmt.Print("\n\n")
+	pVerbose := flag.Bool("v", false, "Detailed logs")
 
 	// Parse the flags
 	flag.Parse()
@@ -88,6 +95,8 @@ func main() {
 		// if verbose is not set
 		log.SetLevel(log.WarnLevel)
 	}
+
+	fmt.Println("Using config file ", *config_filename)
 
 	log.Info("Giv me one more night !")
 	log.Info("--------->>>> Starting WatchDog Server Insecure Mode <<<----------")
