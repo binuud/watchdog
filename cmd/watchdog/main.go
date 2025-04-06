@@ -10,9 +10,12 @@ import (
 
 func main() {
 
+	fmt.Println("Usage: watchdogServer -h   For Help")
+	fmt.Print("\n\n")
+
 	// Define a string flag for the file name
 	fileName := flag.String("file", "config.yaml", "Name of the config file (config.yaml) (optional)")
-	pVerbose := flag.Bool("v", false, "Explain what's happening while program runs")
+	pVerbose := flag.Bool("v", false, "Detailed logs")
 
 	// Parse the flags
 	flag.Parse()
@@ -23,7 +26,6 @@ func main() {
 		log.SetLevel(log.WarnLevel)
 	}
 
-	fmt.Println("usage: watchdog --file [filename-with-path]")
 	fmt.Println("Using config file ", *fileName)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
