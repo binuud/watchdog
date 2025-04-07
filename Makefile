@@ -45,6 +45,10 @@ deploy: ## Deploy all images to docker hub
 	docker tag $(REPO)/${APP_NAME} $(REPO)/${APP_NAME}:$(DOCKER_HUB_TAG)
 	docker push $(REPO)/${APP_NAME}:$(DOCKER_HUB_TAG)
 
+deploy-latest: ## deploy current tag as latest
+	docker tag $(REPO)/${APP_NAME} $(REPO)/${APP_NAME}:latest
+	docker push $(REPO)/${APP_NAME}:latest
+
 protos: ## Buid go and web protos, and swagger openApi json
 	$(PROTOC) -I=./proto/.  \
 	--go_out=./gen/go/ \
