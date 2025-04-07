@@ -43,6 +43,15 @@ Fetching data... (Single Thread)
 │   │                  │         │        │     │       │        │          │       │       │       │
 └───┴──────────────────┴─────────┴────────┴─────┴───────┴────────┴──────────┴───────┴───────┴───────┘
 ```
+Column description
+* Mutated - days before last update of whois data
+* Expiry - number of days remaining for the domain to expire
+* Certs
+  * Total - total number of certificates associated with the domain, subdomain
+  * Valid - number of valid certificates (name mapping + expiry)
+  * Expiry - number of days remaining for the ceritificate to expire
+* IP - number of ip associated with the domain
+* Reachable - endpoints can be configured in the config.yaml file, each domain can have multiple endpoints, watchdog will test reachability of each endpoint.
 
 ## What is this
 This is simple tool to display expiry and connectivity information on a small set of domains, subdomains, and endpoints. I wanted a simple tool to look at the following
@@ -128,15 +137,24 @@ watchdog --file [PATH-TO-FILE]/config.yaml
 
 ## Using docker image
 
-When using docker image, the default entrypoint of the docker image is the server. So if you want to 
-run once, use the following command
+
 ```
-docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
+docker pull dronasys/watchdog
 ```
+
 
 To start the grpc and http server 
 ```
 docker run --name WatchDog -p 10090:9090 -p 10080:9080 -v  "./config.yaml:/configs/config.yaml" dronasys/watchdog -d
+```
+* container port 9090 - grpc
+* container port 9080 - http
+* mount config file to /configs/config.yaml
+
+When using docker image, the default entrypoint is the server. If you want to 
+run once, use the following command, this will give the table output.
+```
+docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 ```
 
 ## Connectivity
@@ -164,3 +182,4 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 | :---            |    :----    |          :---                           |
 | TabulationView  | MIT         | https://github.com/jedib0t/go-pretty    |
 | WhoIsParser     | Apache 2.0  | https://github.com/likexian/whois       |
+| Pkg Release     | NA          | https://goreleaser.com                  |
