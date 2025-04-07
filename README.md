@@ -61,7 +61,7 @@ This is simple tool to display expiry and connectivity information on a small se
 * Check if domain is going to expire, show a warning if it is expiring in 10 days
 * Find number of IPV4/IPv6 addresses associated with the domain
 * If there are sub domains, make seperate entries in the config.yaml file, as shown in this readme file
-* You might be hosting dev apps, in some intenal endpoint path like exmaple.com/dev/app1, you can add these
+* You might be hosting dev apps, in some intenal endpoint path like example.com/dev/app1, you can add these
 end point entries, and the tool will check for its reachability
 
 ## Install
@@ -133,8 +133,6 @@ watchdog --file [PATH-TO-FILE]/config.yaml
 ```
 
 
-
-
 ## Using docker image
 
 
@@ -183,3 +181,7 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 | TabulationView  | MIT         | https://github.com/jedib0t/go-pretty    |
 | WhoIsParser     | Apache 2.0  | https://github.com/likexian/whois       |
 | Pkg Release     | NA          | https://goreleaser.com                  |
+
+Usage videos will be uploaded here, this tool will be available as a AI Module on the BrainUI soon
+* https://www.youtube.com/@dronasystems/shorts 
+* https://www.youtube.com/@dronasystems/videos
