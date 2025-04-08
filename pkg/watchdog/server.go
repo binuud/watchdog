@@ -92,3 +92,8 @@ func (s *WatchDogGRPCServer) Health(ctx context.Context, in *protoV1.HealthReque
 	}
 	return healthResponse, nil
 }
+
+func (s *WatchDogGRPCServer) Reload(ctx context.Context, in *protoV1.ReloadRequest) (*protoV1.ReloadResponse, error) {
+	s.Service.CheckDomains()
+	return &protoV1.ReloadResponse{}, nil
+}
