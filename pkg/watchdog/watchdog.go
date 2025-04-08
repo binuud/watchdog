@@ -57,6 +57,7 @@ func (s *WatchDogService) initFromConfig(fileName string) *WatchDogService {
 
 func (s *WatchDogService) CheckDomains() error {
 
+	log.Infof("Fetching details of all domains")
 	for _, domainEntry := range s.Data {
 
 		// get domain details
