@@ -143,7 +143,7 @@ docker pull dronasys/watchdog
 
 To start the grpc and http server 
 ```
-docker run --name WatchDog -p 10090:9090 -p 10080:9080 -v  "./config.yaml:/configs/config.yaml" dronasys/watchdog -d
+docker run --name WatchDog -p 10090:9090 -p 10080:9080 -d -v  "./config.yaml:/configs/config.yaml" dronasys/watchdog
 ```
 * container port 9090 - grpc
 * container port 9080 - http
@@ -155,13 +155,24 @@ run once, use the following command, this will give the table output.
 docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 ```
 
+Once server is running, REST api can be used for getting details of domains, refer to swagger interface 
+for details of the REST api's
+```
+curl -X GET 'http://localhost:10080/v1/watchdog/getAll?page=1&perPage=10' | jq
+```
+
+Get Details of a particular domain
+```
+curl -X GET 'http://localhost:10080/v1/watchdog/get?name=www.google.com' | jq
+```
+
 ## Connectivity
 
 * GRPC enabled, reflection enabled by default
 * HTTP server enabled, [OpenApiSpec](/gen/web/v1/watchdog/openapi.json)
 * Typescript interface at /gen/web/v1/watchdog/*.ts
 * Docker image by default starts in server mode
-* For looking at OpenApiSpec, clone the project, and run below command...
+* For looking at OpenApiSpec, clone the project, and run below command, from root of project.
 ```
 docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.json -e SWAGGER_FILE=/tmp/swagger.json docker.swagger.io/swaggerapi/swagger-editor
 ```
