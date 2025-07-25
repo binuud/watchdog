@@ -135,7 +135,7 @@ watchdog --file [PATH-TO-FILE]/config.yaml
 
 * server mode
 ```
-watchdogServer -v -grpc_port 10090 -http_port 10080 --file config.yaml
+watchdogServer -v -grpc_port 10090 -http_port 10080 --file config.yamlgit 
 ```
 
 
