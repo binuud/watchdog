@@ -5,7 +5,9 @@
 # This docker file is used to create multiple docker images
 #
 
-FROM golang:latest AS builder
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
+ARG TARGETOS
+ARG TARGETARCH
 
 LABEL maintainer="Binu Udayakumar"
 
@@ -20,8 +22,8 @@ WORKDIR /build
 ENV GO111MODULE=auto
 
 # Build WatchDog - Watch for Certificate expiry, connectivity, domain expiry
-RUN CGO_ENABLED=0 GOOS=linux go build  -o watchDog cmd/watchdog/main.go
-RUN CGO_ENABLED=0 GOOS=linux go build  -o watchDogServer cmd/watchdogServer/main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build  -o watchDog cmd/watchdog/main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build  -o watchDogServer cmd/watchdogServer/main.go
 
 FROM gcr.io/distroless/static
 
