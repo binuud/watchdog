@@ -9,8 +9,8 @@
 REPO=dronasys
 APP_NAME ?= watchdog
 
-BUILD_VER ?= v0.0.1
-DOCKER_HUB_TAG ?= v0.0.1
+BUILD_VER ?= v0.1.44
+DOCKER_HUB_TAG ?= v0.1.44
 
 TAGGED_NAME = $(REPO)/$(APP_NAME)
 
