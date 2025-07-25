@@ -126,7 +126,7 @@ sample entry for subdomain
 ```
 Hope the yaml is self explanatory.
 
-Now run the binary
+### Go Binary
 
 * single run mode
 ```
@@ -139,11 +139,16 @@ watchdogServer -v -grpc_port 10090 -http_port 10080 --file config.yaml
 ```
 
 
-## Using docker image
+### Docker Image
 
 
 ```
 docker pull dronasys/watchdog
+```
+
+To run once with the given config, use the following command, this will give the table output.
+```
+docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 ```
 
 
@@ -155,11 +160,8 @@ docker run --name WatchDog -p 10090:9090 -p 10080:9080 -d -v  "./config.yaml:/co
 * container port 9080 - http
 * mount config file to /configs/config.yaml
 
-When using docker image, the default entrypoint is the server. If you want to 
-run once, use the following command, this will give the table output.
-```
-docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
-```
+When using docker image, the default entrypoint is the 'server'.
+
 
 Once server is running, REST api can be used for getting details of domains, refer to swagger interface 
 for details of the REST api's
