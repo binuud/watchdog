@@ -36,7 +36,7 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 build: ## Build docker image
-	docker build --no-cache  --build-arg BUILD_VER=$(BUILD_VER) $(MULTI_PLATFORM_DOCKER) -t $(REPO)/$(APP_NAME) -f Dockerfile .
+	docker build --no-cache  --build-arg BUILD_VER=$(BUILD_VER) $(MULTI_PLATFORM_DOCKER) -t $(REPO)/$(APP_NAME) -f deployment/Dockerfile .
 
 build-binary: ## Build the watchDog project
 	go build .
@@ -77,10 +77,10 @@ run-server: ## Start GRPC and HTTP server
 	go run cmd/watchdogServer/main.go -v -grpc_port 10090 -http_port 10080
 
 run-docker: ## run docker image as server
-	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
+	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
 
 run-docker-once: ## run docker image once
-	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --name $(APP_NAME) -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
+	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 
 swagger-ui: ## launch swagger ui
 	docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.json -e SWAGGER_FILE=/tmp/swagger.json docker.swagger.io/swaggerapi/swagger-editor
