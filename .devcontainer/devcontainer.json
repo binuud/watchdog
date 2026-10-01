@@ -2,14 +2,17 @@
   "name": "Go Docker Dev Environment with GoPls",
   "image": "dronasys-com/golang:1.27.1",
   "runArgs": [
-    "--name", "golang-dev"
+    "--name", "golang-dev",
   ],
   // Automatically installs the official Go extension inside the container
   "customizations": {
     "vscode": {
       "extensions": [
         "golang.go"
-      ]
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
     }
   },
   // Mount local workspace folders into the container
@@ -19,4 +22,5 @@
   
   // Use 'remoteUser' if you need to run as a non-root user
   "remoteUser": "root"
+
 }
