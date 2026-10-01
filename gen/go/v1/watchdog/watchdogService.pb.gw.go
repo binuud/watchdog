@@ -43,6 +43,9 @@ func request_WatchDog_Reload_0(ctx context.Context, marshaler runtime.Marshaler,
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.Reload(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -71,6 +74,9 @@ func request_WatchDog_Get_0(ctx context.Context, marshaler runtime.Marshaler, cl
 	}
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_WatchDog_Get_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
 	}
 	msg, err := client.Get(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -104,6 +110,9 @@ func request_WatchDog_GetDetails_0(ctx context.Context, marshaler runtime.Marsha
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_WatchDog_GetDetails_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.GetDetails(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -136,6 +145,9 @@ func request_WatchDog_ListSummaries_0(ctx context.Context, marshaler runtime.Mar
 	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_WatchDog_ListSummaries_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.ListSummaries(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -160,6 +172,9 @@ func request_WatchDog_Health_0(ctx context.Context, marshaler runtime.Marshaler,
 		protoReq HealthRequest
 		metadata runtime.ServerMetadata
 	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
 	msg, err := client.Health(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }

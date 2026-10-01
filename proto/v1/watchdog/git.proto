@@ -5,44 +5,91 @@
 syntax = "proto3";
 package watchdog;
 
-option go_package = "github.com/binuud/watchdog/gen/go/v1/git";
+option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 
 // import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 
 message GitProject {
 
-  // 
+  // unique UUID for each project
   string uuid = 1;
 
   // project name
-  string name = 1;   
+  string name = 2;   
 
+  // project path, relative to home directory
+  string path = 3;   
 
-  int64 staged = 1;
-  int64 unstaged = 2;
-  int64 untracked = 3;
+  // small description about the project
+  string description = 4;
+
+  // github repo upstream path
+  string repo = 5;
+
+  // default github user for this project
+  string user = 6;
+
+  enum ProjectStatus {
+    IGNORE_PROJECT_STATUS = 0;
+    // read status, project is live
+    ACTIVE = 1; 
+    // project is not live
+    INACTIVE = 2; 
+    // project is not active, use data from cached always
+    ARCHIVE = 3;  
+  }
+
+  ProjectStatus status = 10;
 
 }
 
 // Represents the overall status of the Git repository.
 message GitStatusResponse {
-  string branch_name = 1;         // e.g., "master"
-  string upstream_branch = 2;     // e.g., "origin/master"
-  int32 ahead_count = 3;          // Number of commits ahead of upstream
-  int32 behind_count = 4;         // Number of commits behind upstream
-  bool is_clean = 5;              // True if the working tree is clean
+
+  // e.g., "master"
+  string branch_name = 1;     
   
-  repeated FileStatus staged = 6;    // Changes to be committed
-  repeated FileStatus unstaged = 7;  // Changes not staged for commit
-  repeated string untracked = 8;     // Paths of completely new, untracked files
-  repeated string ignored = 9;       // Paths explicitly ignored (if requested)
+  // e.g., "origin/master"
+  string upstream_branch = 2;   
+  
+  // Number of commits ahead of upstream
+  int32 ahead_count = 3;     
+  
+  // Number of commits behind upstream
+  int32 behind_count = 4;    
+  
+  // True if the working tree is clean
+  bool is_clean = 5;   
+  
+  // numbers of staged, unstaged, untracked, ignored files
+  int64 num_staged = 11;
+  int64 num_unstaged = 12;
+  int64 num_untracked = 13;
+  int64 num_ignored = 14;
+  
+  // Changes to be committed
+  repeated FileStatus staged = 21;   
+  
+  // Changes not staged for commit
+  repeated FileStatus unstaged = 22;  
+
+  // Paths of completely new, untracked files
+  repeated string untracked = 23; 
+  
+  // Paths explicitly ignored (if requested)
+  repeated string ignored = 24;       
+
 }
 
 // Represents an individual file change state.
 message FileStatus {
-  string path = 1;                // The file path relative to repository root
-  string old_path = 2;            // Only populated if the file was renamed or copied
+
+  // The file path relative to repository root
+  string path = 1; 
+  
+  // Only populated if the file was renamed or copied
+  string old_path = 2;            
   
   // The exact status action performed on the file
   enum StatusCode {
@@ -52,9 +99,12 @@ message FileStatus {
     DELETED = 3;
     RENAMED = 4;
     COPIED = 5;
-    TYPE_CHANGED = 6;             // e.g., regular file changed to a symlink
-    UNMERGED = 7;                 // Merge conflict state
+    // e.g., regular file changed to a symlink
+    TYPE_CHANGED = 6;   
+    // Merge conflict state          
+    UNMERGED = 7;                 
   }
   
   StatusCode status = 3;
+
 }

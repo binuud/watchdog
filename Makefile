@@ -53,7 +53,7 @@ deploy-latest: ## deploy current tag as latest
 	docker tag $(REPO)/${APP_NAME} $(REPO)/${APP_NAME}:latest
 	docker push $(REPO)/${APP_NAME}:latest
 
-protos: ## Buid go and web protos, and swagger openApi json
+protos: ## Buid go and web protos, and swagger openApi json, for git and domain status
 	$(PROTOC) -I=./proto/.  \
 	--go_out=./gen/go/ \
 	--go_opt paths=source_relative \
@@ -66,7 +66,10 @@ protos: ## Buid go and web protos, and swagger openApi json
 	--grpc-gateway-ts_opt paths=source_relative \
 	--grpc-gateway-ts_opt generate_unbound_methods=true \
 	--oas_out ./gen/web/v1/watchdog/ \
-	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
+	proto/v1/watchdog/watchdog.proto \
+	proto/v1/watchdog/watchdogService.proto \
+	proto/v1/watchdog/git.proto \
+	proto/v1/watchdog/gitService.proto  
 	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 start-container: ## run this to start a golang container, with this code base mounted
