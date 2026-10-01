@@ -1,0 +1,60 @@
+/// Please use the following editor setup for this file:
+
+// Tab size=2; Tabs as spaces; Clean up trailing whitepsace
+// 'make proto' will run clang-format to fix formatiing
+syntax = "proto3";
+package watchdog;
+
+option go_package = "github.com/binuud/watchdog/gen/go/v1/git";
+
+// import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message GitProject {
+
+  // 
+  string uuid = 1;
+
+  // project name
+  string name = 1;   
+
+
+  int64 staged = 1;
+  int64 unstaged = 2;
+  int64 untracked = 3;
+
+}
+
+// Represents the overall status of the Git repository.
+message GitStatusResponse {
+  string branch_name = 1;         // e.g., "master"
+  string upstream_branch = 2;     // e.g., "origin/master"
+  int32 ahead_count = 3;          // Number of commits ahead of upstream
+  int32 behind_count = 4;         // Number of commits behind upstream
+  bool is_clean = 5;              // True if the working tree is clean
+  
+  repeated FileStatus staged = 6;    // Changes to be committed
+  repeated FileStatus unstaged = 7;  // Changes not staged for commit
+  repeated string untracked = 8;     // Paths of completely new, untracked files
+  repeated string ignored = 9;       // Paths explicitly ignored (if requested)
+}
+
+// Represents an individual file change state.
+message FileStatus {
+  string path = 1;                // The file path relative to repository root
+  string old_path = 2;            // Only populated if the file was renamed or copied
+  
+  // The exact status action performed on the file
+  enum StatusCode {
+    STATUS_CODE_UNSPECIFIED = 0;
+    MODIFIED = 1;
+    ADDED = 2;
+    DELETED = 3;
+    RENAMED = 4;
+    COPIED = 5;
+    TYPE_CHANGED = 6;             // e.g., regular file changed to a symlink
+    UNMERGED = 7;                 // Merge conflict state
+  }
+  
+  StatusCode status = 3;
+}

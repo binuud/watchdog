@@ -87,6 +87,9 @@ run-docker: ## run docker image as server
 run-docker-once: ## run docker image once
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 
+run-scratch: ## run go lang scratch project
+	go run cmd/scratch/main.go 
+
 swagger-ui: ## launch swagger ui
 	docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.json -e SWAGGER_FILE=/tmp/swagger.json docker.swagger.io/swaggerapi/swagger-editor
 
