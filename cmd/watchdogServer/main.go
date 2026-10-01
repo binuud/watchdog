@@ -51,7 +51,7 @@ func runHtppServer() {
 		Handler: gwMux,
 	}
 
-	log.Info("HTTP server started")
+	log.Infof("HTTP server starting...(%d)", *server_http_port)
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	log.Fatalln(gwServer.ListenAndServe())
 

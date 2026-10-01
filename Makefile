@@ -12,6 +12,8 @@ APP_NAME ?= watchdog
 BUILD_VER ?= v0.1.44
 DOCKER_HUB_TAG ?= v0.1.44
 
+GOLANG_IMAGE=golang:1.27.1
+
 TAGGED_NAME = $(REPO)/$(APP_NAME)
 
 MULTI_PLATFORM_DOCKER = --platform=linux/amd64,linux/arm64
@@ -67,6 +69,9 @@ protos: ## Buid go and web protos, and swagger openApi json
 	proto/v1/watchdog/watchdog.proto proto/v1/watchdog/watchdogService.proto  
 	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
+start-container: ## run this to start a golang container, with this code base mounted
+	docker run --rm -it -v .:/app  -p 9090:9090 -p 9080:9080 -w /app dronasys-com/golang:1.27.1
+
 run: ## Run code once, for auto run on code change
 	go run cmd/watchdog/main.go -v  -file $(PWD)/config.yaml
 
@@ -74,7 +79,7 @@ run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go -file $(PWD)/local/myDomains.yaml
 
 run-server: ## Start GRPC and HTTP server
-	go run cmd/watchdogServer/main.go -v -grpc_port 10090 -http_port 10080
+	go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080
 
 run-docker: ## run docker image as server
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)

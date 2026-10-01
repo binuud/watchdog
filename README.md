@@ -179,6 +179,18 @@ ReFetch all the information in the background (non blocking)
 curl -X POST 'http://localhost:10080/v1/watchdog/reload' -d '{}'
 ```  
 
+## Local Development
+When you are developing on this, or want to make changes, 
+use below command to start a golang container, and mount the source code within the container
+```
+make start-container
+```
+
+from within the container, run the make command to select various targets
+```
+make
+```
+
 ## Connectivity
 
 * GRPC enabled, reflection enabled by default
