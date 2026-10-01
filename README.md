@@ -221,3 +221,8 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 Usage videos will be uploaded here, this tool will be available as a AI Module on the BrainUI soon
 * https://www.youtube.com/@dronasystems/shorts 
 * https://www.youtube.com/@dronasystems/videos
+
+
+## VSCode
+
+* Dev Containers - for launching development containers
