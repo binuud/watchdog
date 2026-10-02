@@ -14,8 +14,9 @@ type WatchDogGRPCServer struct {
 	protoV1.UnimplementedWatchDogServer
 }
 
-func NewWatchDogGRPCServer(fileName string) *WatchDogGRPCServer {
-	service := NewWatchDogService(fileName)
+func NewWatchDogGRPCServer(fileName string, gitRootFolder string) *WatchDogGRPCServer {
+
+	service := NewWatchDogService(fileName, gitRootFolder)
 	go func() {
 		service.Watcher()
 	}()

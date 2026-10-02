@@ -1,0 +1,177 @@
+package watchDogServer
+
+import (
+	"crypto/x509"
+	"time"
+
+	"github.com/binuud/watchdog/gen/go/v1/watchdog"
+	"github.com/binuud/watchdog/pkg/domainUtils"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func (s *WatchDogService) CheckDomains() error {
+
+	log.Infof("Fetching details of all domains")
+	for _, domainEntry := range s.Data {
+
+		// get domain details
+		// persist data in domain Entry for summarization and storage
+		s.getDomainDetails(domainEntry)
+
+		// convert summarization to a different loop later
+		s.summarize(domainEntry)
+	}
+
+	return nil
+
+}
+
+// get the domain row corresponding to the given domain name
+// from the data object
+func (s *WatchDogService) getDomainEntry(domainName string) *watchdog.DomainRow {
+	for _, item := range s.Data {
+		if domainName == item.Domain.Name {
+			return item
+		}
+	}
+	return nil
+}
+
+// get domain details like certificates
+// ip resolv and reachablilty of a domain
+func (s *WatchDogService) getDomainDetails(domainEntry *watchdog.DomainRow) {
+
+	domain := domainEntry.Domain
+	endpointStatuses := make([]*watchdog.EndpointStatus, 0)
+	for _, item := range domain.Endpoints {
+		responseCode, err := domainUtils.CheckHttpHead(item)
+		if err != nil {
+			// handle err
+		}
+		endPointStatus := &watchdog.EndpointStatus{
+			Endpoint:   item,
+			StatusCode: int64(responseCode),
+		}
+		endpointStatuses = append(endpointStatuses, endPointStatus)
+		log.Printf("Received response %d %s", responseCode, item)
+	}
+	domainEntry.Info.EndpointStatuses = endpointStatuses
+
+	// fetch the certs
+	certs, err := domainUtils.GetCertificates(domain.Name, 443)
+	if err != nil {
+		log.Errorf("error when getting certificate of domain %s, %v", domain.Name, err)
+	}
+	for _, item := range certs {
+		domainEntry.Info.Certificates = append(domainEntry.Info.Certificates, item.Raw)
+	}
+
+	ipAddresses, err := domainUtils.ResolveIP(domain.Name)
+	if err != nil {
+		log.Errorf("error when resolving ip of domain %s, %v", domain.Name, err)
+	}
+
+	// save the ip addresses in the domainRow object
+
+	domainEntry.Info.IpAddresses = nil
+	for _, ipAddr := range ipAddresses {
+		log.Printf("Ip address of domain %s %v", domain.Name, ipAddr.String())
+		domainEntry.Info.IpAddresses = append(domainEntry.Info.IpAddresses, ipAddr.String())
+	}
+
+	// get WhoIs data
+	err = s.getWhoIsRecord(domainEntry)
+	if err != nil {
+		log.Errorf("error when getting whois for domain %s, %v", domain.Name, err)
+	}
+}
+
+func (s *WatchDogService) summarize(domainEntry *watchdog.DomainRow) {
+	// fetch and analyse the certificates
+	domainEntry.Summary.CreatedAt = timestamppb.Now()
+
+	s.summarizeWhoIs(domainEntry)
+
+	if len(domainEntry.Info.IpAddresses) > 0 {
+		domainEntry.Summary.Resolvable = true
+	} else {
+		domainEntry.Summary.Resolvable = false
+	}
+	domainEntry.Summary.NumIp = int64(len(domainEntry.Info.IpAddresses))
+
+	// reachable endpoints
+	reachable := 0
+	for _, item := range domainEntry.Info.EndpointStatuses {
+		if item.StatusCode >= 100 && item.StatusCode < 400 {
+			reachable++
+		}
+	}
+	domainEntry.Summary.NumEndpoints = int64(len(domainEntry.Domain.Endpoints))
+	domainEntry.Summary.ValidEndpoints = int64(reachable)
+
+	if reachable == len(domainEntry.Info.EndpointStatuses) && reachable > 0 {
+		domainEntry.Summary.Reachable = true
+	} else {
+		domainEntry.Summary.Reachable = false
+	}
+
+	err := s.analyseCertificates(domainEntry)
+	if err != nil {
+		log.Errorf("error when checking certificated of domain %s, %v", domainEntry.Domain.Name, err)
+	}
+
+}
+
+func (s *WatchDogService) analyseCertificates(domainEntry *watchdog.DomainRow) error {
+
+	domainEntry.Summary.CertsStatus = nil
+	validCertCount := 0
+	expiringCertCount := 0
+	leastExpiry := 64000
+
+	for _, certRaw := range domainEntry.Info.Certificates {
+
+		cert, err := x509.ParseCertificate(certRaw)
+		if err != nil {
+			log.Errorf("cannot parse certificate for domain %s", domainEntry.Domain.Name)
+		}
+
+		now := time.Now()
+		diff := cert.NotAfter.Sub(now)
+		certExpiry := int64(diff.Hours() / 24)
+
+		certSummary := &watchdog.CertificateStatus{
+			CertExpiry: certExpiry,
+			CertValid:  true,
+			Status:     watchdog.CertificateStatus_Valid,
+		}
+
+		err = cert.VerifyHostname(domainEntry.Domain.Name)
+		if err != nil {
+			certSummary.CertValid = false
+			certSummary.Status = watchdog.CertificateStatus_WrongCertificate
+		} else {
+			validCertCount++
+		}
+		if certExpiry < int64(leastExpiry) {
+			leastExpiry = int(certExpiry)
+		}
+		if certExpiry < 10 {
+			// need to warn
+			expiringCertCount++
+			certSummary.Status = watchdog.CertificateStatus_Expiring
+			log.Warnf("Certificate expires soon for domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
+		} else {
+			// log.Printf("Certificate valid domain %s, expires in %d days", domainEntry.Domain.Name, certExpiry)
+		}
+		domainEntry.Summary.CertsStatus = append(domainEntry.Summary.CertsStatus, certSummary)
+
+	}
+	domainEntry.Summary.NumCerts = int64(len(domainEntry.Info.Certificates))
+	domainEntry.Summary.NumValidCerts = int64(validCertCount)
+	domainEntry.Summary.NumExpiringCerts = int64(expiringCertCount)
+	domainEntry.Summary.LeastCertExpiryInDays = int64(leastExpiry)
+	return nil
+
+}

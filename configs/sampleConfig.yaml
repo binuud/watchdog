@@ -32,9 +32,10 @@ projects:
     org: binuud
     user: binuud
     path: Code/local/dev-tools
-    project_url: https://github.com/binuud/dev-tools
+    repo: https://github.com/binuud/dev-tools.git
   - uuid: ""
     name: containers
     org: binuud
     user: binuud
     path: Code/local/dev-tools
+    repo: https://github.com/binuud/containers.git

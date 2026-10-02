@@ -14,7 +14,7 @@ package watchdog
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -159,10 +159,14 @@ type GitProject struct {
 	Path string `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
 	// small description about the project
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// project org
+	Org string `protobuf:"bytes,5,opt,name=org,proto3" json:"org,omitempty"`
+	// the github, gitlab project url
+	Projecturl string `protobuf:"bytes,6,opt,name=projecturl,proto3" json:"projecturl,omitempty"`
 	// github repo upstream path
-	Repo string `protobuf:"bytes,5,opt,name=repo,proto3" json:"repo,omitempty"`
+	Remoteurl string `protobuf:"bytes,7,opt,name=remoteurl,proto3" json:"remoteurl,omitempty"`
 	// default github user for this project
-	User          string                   `protobuf:"bytes,6,opt,name=user,proto3" json:"user,omitempty"`
+	User          string                   `protobuf:"bytes,8,opt,name=user,proto3" json:"user,omitempty"`
 	Status        GitProject_ProjectStatus `protobuf:"varint,10,opt,name=status,proto3,enum=watchdog.GitProject_ProjectStatus" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -226,9 +230,23 @@ func (x *GitProject) GetDescription() string {
 	return ""
 }
 
-func (x *GitProject) GetRepo() string {
+func (x *GitProject) GetOrg() string {
 	if x != nil {
-		return x.Repo
+		return x.Org
+	}
+	return ""
+}
+
+func (x *GitProject) GetProjecturl() string {
+	if x != nil {
+		return x.Projecturl
+	}
+	return ""
+}
+
+func (x *GitProject) GetRemoteurl() string {
+	if x != nil {
+		return x.Remoteurl
 	}
 	return ""
 }
@@ -248,7 +266,7 @@ func (x *GitProject) GetStatus() GitProject_ProjectStatus {
 }
 
 // Represents the overall status of the Git repository.
-type GitStatusResponse struct {
+type GitProjectStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// e.g., "master"
 	BranchName string `protobuf:"bytes,1,opt,name=branch_name,json=branchName,proto3" json:"branch_name,omitempty"`
@@ -260,11 +278,12 @@ type GitStatusResponse struct {
 	BehindCount int32 `protobuf:"varint,4,opt,name=behind_count,json=behindCount,proto3" json:"behind_count,omitempty"`
 	// True if the working tree is clean
 	IsClean bool `protobuf:"varint,5,opt,name=is_clean,json=isClean,proto3" json:"is_clean,omitempty"`
-	// numbers of staged, unstaged, untracked, ignored files
-	NumStaged    int64 `protobuf:"varint,11,opt,name=num_staged,json=numStaged,proto3" json:"num_staged,omitempty"`
+	// numbers of modified, unstaged, untracked, ignored files
+	NumModified  int64 `protobuf:"varint,11,opt,name=num_modified,json=numModified,proto3" json:"num_modified,omitempty"`
 	NumUnstaged  int64 `protobuf:"varint,12,opt,name=num_unstaged,json=numUnstaged,proto3" json:"num_unstaged,omitempty"`
 	NumUntracked int64 `protobuf:"varint,13,opt,name=num_untracked,json=numUntracked,proto3" json:"num_untracked,omitempty"`
 	NumIgnored   int64 `protobuf:"varint,14,opt,name=num_ignored,json=numIgnored,proto3" json:"num_ignored,omitempty"`
+	NumStashes   int64 `protobuf:"varint,15,opt,name=num_stashes,json=numStashes,proto3" json:"num_stashes,omitempty"`
 	// Changes to be committed
 	Staged []*FileStatus `protobuf:"bytes,21,rep,name=staged,proto3" json:"staged,omitempty"`
 	// Changes not staged for commit
@@ -277,20 +296,20 @@ type GitStatusResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GitStatusResponse) Reset() {
-	*x = GitStatusResponse{}
+func (x *GitProjectStatus) Reset() {
+	*x = GitProjectStatus{}
 	mi := &file_v1_watchdog_git_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GitStatusResponse) String() string {
+func (x *GitProjectStatus) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GitStatusResponse) ProtoMessage() {}
+func (*GitProjectStatus) ProtoMessage() {}
 
-func (x *GitStatusResponse) ProtoReflect() protoreflect.Message {
+func (x *GitProjectStatus) ProtoReflect() protoreflect.Message {
 	mi := &file_v1_watchdog_git_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -302,96 +321,103 @@ func (x *GitStatusResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GitStatusResponse.ProtoReflect.Descriptor instead.
-func (*GitStatusResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GitProjectStatus.ProtoReflect.Descriptor instead.
+func (*GitProjectStatus) Descriptor() ([]byte, []int) {
 	return file_v1_watchdog_git_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GitStatusResponse) GetBranchName() string {
+func (x *GitProjectStatus) GetBranchName() string {
 	if x != nil {
 		return x.BranchName
 	}
 	return ""
 }
 
-func (x *GitStatusResponse) GetUpstreamBranch() string {
+func (x *GitProjectStatus) GetUpstreamBranch() string {
 	if x != nil {
 		return x.UpstreamBranch
 	}
 	return ""
 }
 
-func (x *GitStatusResponse) GetAheadCount() int32 {
+func (x *GitProjectStatus) GetAheadCount() int32 {
 	if x != nil {
 		return x.AheadCount
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetBehindCount() int32 {
+func (x *GitProjectStatus) GetBehindCount() int32 {
 	if x != nil {
 		return x.BehindCount
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetIsClean() bool {
+func (x *GitProjectStatus) GetIsClean() bool {
 	if x != nil {
 		return x.IsClean
 	}
 	return false
 }
 
-func (x *GitStatusResponse) GetNumStaged() int64 {
+func (x *GitProjectStatus) GetNumModified() int64 {
 	if x != nil {
-		return x.NumStaged
+		return x.NumModified
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetNumUnstaged() int64 {
+func (x *GitProjectStatus) GetNumUnstaged() int64 {
 	if x != nil {
 		return x.NumUnstaged
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetNumUntracked() int64 {
+func (x *GitProjectStatus) GetNumUntracked() int64 {
 	if x != nil {
 		return x.NumUntracked
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetNumIgnored() int64 {
+func (x *GitProjectStatus) GetNumIgnored() int64 {
 	if x != nil {
 		return x.NumIgnored
 	}
 	return 0
 }
 
-func (x *GitStatusResponse) GetStaged() []*FileStatus {
+func (x *GitProjectStatus) GetNumStashes() int64 {
+	if x != nil {
+		return x.NumStashes
+	}
+	return 0
+}
+
+func (x *GitProjectStatus) GetStaged() []*FileStatus {
 	if x != nil {
 		return x.Staged
 	}
 	return nil
 }
 
-func (x *GitStatusResponse) GetUnstaged() []*FileStatus {
+func (x *GitProjectStatus) GetUnstaged() []*FileStatus {
 	if x != nil {
 		return x.Unstaged
 	}
 	return nil
 }
 
-func (x *GitStatusResponse) GetUntracked() []string {
+func (x *GitProjectStatus) GetUntracked() []string {
 	if x != nil {
 		return x.Untracked
 	}
 	return nil
 }
 
-func (x *GitStatusResponse) GetIgnored() []string {
+func (x *GitProjectStatus) GetIgnored() []string {
 	if x != nil {
 		return x.Ignored
 	}
@@ -461,19 +487,84 @@ func (x *FileStatus) GetStatus() FileStatus_StatusCode {
 	return FileStatus_STATUS_CODE_UNSPECIFIED
 }
 
+// used for persisting git project information
+type GitProjectRow struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Project       *GitProject            `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	Status        *GitProjectStatus      `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GitProjectRow) Reset() {
+	*x = GitProjectRow{}
+	mi := &file_v1_watchdog_git_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GitProjectRow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GitProjectRow) ProtoMessage() {}
+
+func (x *GitProjectRow) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_watchdog_git_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GitProjectRow.ProtoReflect.Descriptor instead.
+func (*GitProjectRow) Descriptor() ([]byte, []int) {
+	return file_v1_watchdog_git_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GitProjectRow) GetProject() *GitProject {
+	if x != nil {
+		return x.Project
+	}
+	return nil
+}
+
+func (x *GitProjectRow) GetStatus() *GitProjectStatus {
+	if x != nil {
+		return x.Status
+	}
+	return nil
+}
+
+func (x *GitProjectRow) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
 var File_v1_watchdog_git_proto protoreflect.FileDescriptor
 
 const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\n" +
-	"\x15v1/watchdog/git.proto\x12\bwatchdog\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x02\n" +
+	"\x15v1/watchdog/git.proto\x12\bwatchdog\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdd\x02\n" +
 	"\n" +
 	"GitProject\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04path\x18\x03 \x01(\tR\x04path\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x12\n" +
-	"\x04repo\x18\x05 \x01(\tR\x04repo\x12\x12\n" +
-	"\x04user\x18\x06 \x01(\tR\x04user\x12:\n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x10\n" +
+	"\x03org\x18\x05 \x01(\tR\x03org\x12\x1e\n" +
+	"\n" +
+	"projecturl\x18\x06 \x01(\tR\n" +
+	"projecturl\x12\x1c\n" +
+	"\tremoteurl\x18\a \x01(\tR\tremoteurl\x12\x12\n" +
+	"\x04user\x18\b \x01(\tR\x04user\x12:\n" +
 	"\x06status\x18\n" +
 	" \x01(\x0e2\".watchdog.GitProject.ProjectStatusR\x06status\"Q\n" +
 	"\rProjectStatus\x12\x19\n" +
@@ -481,21 +572,22 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bINACTIVE\x10\x02\x12\v\n" +
-	"\aARCHIVE\x10\x03\"\xdc\x03\n" +
-	"\x11GitStatusResponse\x12\x1f\n" +
+	"\aARCHIVE\x10\x03\"\x80\x04\n" +
+	"\x10GitProjectStatus\x12\x1f\n" +
 	"\vbranch_name\x18\x01 \x01(\tR\n" +
 	"branchName\x12'\n" +
 	"\x0fupstream_branch\x18\x02 \x01(\tR\x0eupstreamBranch\x12\x1f\n" +
 	"\vahead_count\x18\x03 \x01(\x05R\n" +
 	"aheadCount\x12!\n" +
 	"\fbehind_count\x18\x04 \x01(\x05R\vbehindCount\x12\x19\n" +
-	"\bis_clean\x18\x05 \x01(\bR\aisClean\x12\x1d\n" +
-	"\n" +
-	"num_staged\x18\v \x01(\x03R\tnumStaged\x12!\n" +
+	"\bis_clean\x18\x05 \x01(\bR\aisClean\x12!\n" +
+	"\fnum_modified\x18\v \x01(\x03R\vnumModified\x12!\n" +
 	"\fnum_unstaged\x18\f \x01(\x03R\vnumUnstaged\x12#\n" +
 	"\rnum_untracked\x18\r \x01(\x03R\fnumUntracked\x12\x1f\n" +
 	"\vnum_ignored\x18\x0e \x01(\x03R\n" +
-	"numIgnored\x12,\n" +
+	"numIgnored\x12\x1f\n" +
+	"\vnum_stashes\x18\x0f \x01(\x03R\n" +
+	"numStashes\x12,\n" +
 	"\x06staged\x18\x15 \x03(\v2\x14.watchdog.FileStatusR\x06staged\x120\n" +
 	"\bunstaged\x18\x16 \x03(\v2\x14.watchdog.FileStatusR\bunstaged\x12\x1c\n" +
 	"\tuntracked\x18\x17 \x03(\tR\tuntracked\x12\x18\n" +
@@ -515,7 +607,11 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\n" +
 	"\x06COPIED\x10\x05\x12\x10\n" +
 	"\fTYPE_CHANGED\x10\x06\x12\f\n" +
-	"\bUNMERGED\x10\aB/Z-github.com/binuud/watchdog/gen/go/v1/watchdogb\x06proto3"
+	"\bUNMERGED\x10\a\"\xad\x01\n" +
+	"\rGitProjectRow\x12.\n" +
+	"\aproject\x18\x01 \x01(\v2\x14.watchdog.GitProjectR\aproject\x122\n" +
+	"\x06status\x18\x02 \x01(\v2\x1a.watchdog.GitProjectStatusR\x06status\x128\n" +
+	"\tcreatedAt\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB/Z-github.com/binuud/watchdog/gen/go/v1/watchdogb\x06proto3"
 
 var (
 	file_v1_watchdog_git_proto_rawDescOnce sync.Once
@@ -530,24 +626,29 @@ func file_v1_watchdog_git_proto_rawDescGZIP() []byte {
 }
 
 var file_v1_watchdog_git_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_v1_watchdog_git_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_v1_watchdog_git_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_v1_watchdog_git_proto_goTypes = []any{
 	(GitProject_ProjectStatus)(0), // 0: watchdog.GitProject.ProjectStatus
 	(FileStatus_StatusCode)(0),    // 1: watchdog.FileStatus.StatusCode
 	(*GitProject)(nil),            // 2: watchdog.GitProject
-	(*GitStatusResponse)(nil),     // 3: watchdog.GitStatusResponse
+	(*GitProjectStatus)(nil),      // 3: watchdog.GitProjectStatus
 	(*FileStatus)(nil),            // 4: watchdog.FileStatus
+	(*GitProjectRow)(nil),         // 5: watchdog.GitProjectRow
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
 var file_v1_watchdog_git_proto_depIdxs = []int32{
 	0, // 0: watchdog.GitProject.status:type_name -> watchdog.GitProject.ProjectStatus
-	4, // 1: watchdog.GitStatusResponse.staged:type_name -> watchdog.FileStatus
-	4, // 2: watchdog.GitStatusResponse.unstaged:type_name -> watchdog.FileStatus
+	4, // 1: watchdog.GitProjectStatus.staged:type_name -> watchdog.FileStatus
+	4, // 2: watchdog.GitProjectStatus.unstaged:type_name -> watchdog.FileStatus
 	1, // 3: watchdog.FileStatus.status:type_name -> watchdog.FileStatus.StatusCode
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 4: watchdog.GitProjectRow.project:type_name -> watchdog.GitProject
+	3, // 5: watchdog.GitProjectRow.status:type_name -> watchdog.GitProjectStatus
+	6, // 6: watchdog.GitProjectRow.createdAt:type_name -> google.protobuf.Timestamp
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_v1_watchdog_git_proto_init() }
@@ -561,7 +662,7 @@ func file_v1_watchdog_git_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_watchdog_git_proto_rawDesc), len(file_v1_watchdog_git_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

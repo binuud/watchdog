@@ -66,10 +66,10 @@ protos: ## Buid go and web protos, and swagger openApi json, for git and domain 
 	--grpc-gateway-ts_opt paths=source_relative \
 	--grpc-gateway-ts_opt generate_unbound_methods=true \
 	--oas_out ./gen/web/v1/watchdog/ \
-	proto/v1/watchdog/watchdog.proto \
-	proto/v1/watchdog/watchdogService.proto \
 	proto/v1/watchdog/git.proto \
-	proto/v1/watchdog/gitService.proto  
+	proto/v1/watchdog/watchdog.proto \
+	proto/v1/watchdog/watchdogService.proto 
+
 	yq eval ./gen/web/v1/watchdog/openapi.yaml -o=json -P > ./gen/web/v1/watchdog/openapi.json
 
 start-container: ## run this to start a golang container, with this code base mounted

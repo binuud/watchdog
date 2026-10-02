@@ -10,6 +10,7 @@ option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 // import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 
+
 message GitProject {
 
   // unique UUID for each project
@@ -24,11 +25,17 @@ message GitProject {
   // small description about the project
   string description = 4;
 
+  // project org
+  string org = 5; 
+
+  // the github, gitlab project url 
+  string projecturl = 6;
+
   // github repo upstream path
-  string repo = 5;
+  string remoteurl = 7;
 
   // default github user for this project
-  string user = 6;
+  string user = 8;
 
   enum ProjectStatus {
     IGNORE_PROJECT_STATUS = 0;
@@ -45,7 +52,7 @@ message GitProject {
 }
 
 // Represents the overall status of the Git repository.
-message GitStatusResponse {
+message GitProjectStatus {
 
   // e.g., "master"
   string branch_name = 1;     
@@ -62,11 +69,12 @@ message GitStatusResponse {
   // True if the working tree is clean
   bool is_clean = 5;   
   
-  // numbers of staged, unstaged, untracked, ignored files
-  int64 num_staged = 11;
+  // numbers of modified, unstaged, untracked, ignored files
+  int64 num_modified = 11;
   int64 num_unstaged = 12;
   int64 num_untracked = 13;
   int64 num_ignored = 14;
+  int64 num_stashes = 15;
   
   // Changes to be committed
   repeated FileStatus staged = 21;   
@@ -107,4 +115,11 @@ message FileStatus {
   
   StatusCode status = 3;
 
+}
+
+// used for persisting git project information
+message GitProjectRow {
+  GitProject project = 1;
+  GitProjectStatus status = 2;
+  google.protobuf.Timestamp createdAt = 11;
 }

@@ -158,6 +158,7 @@ type DomainWatch struct {
 	// interval in seconds
 	RefreshInterval int64         `protobuf:"varint,2,opt,name=refreshInterval,proto3" json:"refreshInterval,omitempty"`
 	Domains         []*DomainItem `protobuf:"bytes,11,rep,name=domains,proto3" json:"domains,omitempty"`
+	Projects        []*GitProject `protobuf:"bytes,12,rep,name=projects,proto3" json:"projects,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -209,6 +210,13 @@ func (x *DomainWatch) GetRefreshInterval() int64 {
 func (x *DomainWatch) GetDomains() []*DomainItem {
 	if x != nil {
 		return x.Domains
+	}
+	return nil
+}
+
+func (x *DomainWatch) GetProjects() []*GitProject {
+	if x != nil {
+		return x.Projects
 	}
 	return nil
 }
@@ -692,7 +700,7 @@ var File_v1_watchdog_watchdog_proto protoreflect.FileDescriptor
 
 const file_v1_watchdog_watchdog_proto_rawDesc = "" +
 	"\n" +
-	"\x1av1/watchdog/watchdog.proto\x12\bwatchdog\x1a\x1fgoogle/protobuf/timestamp.proto\"r\n" +
+	"\x1av1/watchdog/watchdog.proto\x12\bwatchdog\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x15v1/watchdog/git.proto\"r\n" +
 	"\n" +
 	"DomainItem\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
@@ -700,11 +708,12 @@ const file_v1_watchdog_watchdog_proto_rawDesc = "" +
 	"\n" +
 	"domainName\x18\x03 \x01(\tR\n" +
 	"domainName\x12\x1c\n" +
-	"\tendpoints\x18\x04 \x03(\tR\tendpoints\"{\n" +
+	"\tendpoints\x18\x04 \x03(\tR\tendpoints\"\xad\x01\n" +
 	"\vDomainWatch\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12(\n" +
 	"\x0frefreshInterval\x18\x02 \x01(\x03R\x0frefreshInterval\x12.\n" +
-	"\adomains\x18\v \x03(\v2\x14.watchdog.DomainItemR\adomains\"L\n" +
+	"\adomains\x18\v \x03(\v2\x14.watchdog.DomainItemR\adomains\x120\n" +
+	"\bprojects\x18\f \x03(\v2\x14.watchdog.GitProjectR\bprojects\"L\n" +
 	"\x0eEndpointStatus\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x12\x1e\n" +
 	"\n" +
@@ -781,25 +790,27 @@ var file_v1_watchdog_watchdog_proto_goTypes = []any{
 	(*DomainSummary)(nil),                 // 5: watchdog.DomainSummary
 	(*DomainInfo)(nil),                    // 6: watchdog.DomainInfo
 	(*DomainRow)(nil),                     // 7: watchdog.DomainRow
-	(*timestamppb.Timestamp)(nil),         // 8: google.protobuf.Timestamp
+	(*GitProject)(nil),                    // 8: watchdog.GitProject
+	(*timestamppb.Timestamp)(nil),         // 9: google.protobuf.Timestamp
 }
 var file_v1_watchdog_watchdog_proto_depIdxs = []int32{
 	1,  // 0: watchdog.DomainWatch.domains:type_name -> watchdog.DomainItem
-	0,  // 1: watchdog.CertificateStatus.status:type_name -> watchdog.CertificateStatus.EnumCertStatus
-	1,  // 2: watchdog.DomainSummary.domain:type_name -> watchdog.DomainItem
-	4,  // 3: watchdog.DomainSummary.certsStatus:type_name -> watchdog.CertificateStatus
-	8,  // 4: watchdog.DomainSummary.createdAt:type_name -> google.protobuf.Timestamp
-	3,  // 5: watchdog.DomainInfo.endpointStatuses:type_name -> watchdog.EndpointStatus
-	8,  // 6: watchdog.DomainInfo.createdAt:type_name -> google.protobuf.Timestamp
-	1,  // 7: watchdog.DomainRow.domain:type_name -> watchdog.DomainItem
-	6,  // 8: watchdog.DomainRow.info:type_name -> watchdog.DomainInfo
-	5,  // 9: watchdog.DomainRow.summary:type_name -> watchdog.DomainSummary
-	8,  // 10: watchdog.DomainRow.createdAt:type_name -> google.protobuf.Timestamp
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	8,  // 1: watchdog.DomainWatch.projects:type_name -> watchdog.GitProject
+	0,  // 2: watchdog.CertificateStatus.status:type_name -> watchdog.CertificateStatus.EnumCertStatus
+	1,  // 3: watchdog.DomainSummary.domain:type_name -> watchdog.DomainItem
+	4,  // 4: watchdog.DomainSummary.certsStatus:type_name -> watchdog.CertificateStatus
+	9,  // 5: watchdog.DomainSummary.createdAt:type_name -> google.protobuf.Timestamp
+	3,  // 6: watchdog.DomainInfo.endpointStatuses:type_name -> watchdog.EndpointStatus
+	9,  // 7: watchdog.DomainInfo.createdAt:type_name -> google.protobuf.Timestamp
+	1,  // 8: watchdog.DomainRow.domain:type_name -> watchdog.DomainItem
+	6,  // 9: watchdog.DomainRow.info:type_name -> watchdog.DomainInfo
+	5,  // 10: watchdog.DomainRow.summary:type_name -> watchdog.DomainSummary
+	9,  // 11: watchdog.DomainRow.createdAt:type_name -> google.protobuf.Timestamp
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_v1_watchdog_watchdog_proto_init() }
@@ -807,6 +818,7 @@ func file_v1_watchdog_watchdog_proto_init() {
 	if File_v1_watchdog_watchdog_proto != nil {
 		return
 	}
+	file_v1_watchdog_git_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
