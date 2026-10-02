@@ -19,7 +19,8 @@ import (
 var (
 	server_grpc_port = flag.Int("grpc_port", 9090, "Watchdog GRPC Serverport, no token required unsecured")
 	server_http_port = flag.Int("http_port", 9080, "Watchdog HTTP Server port, no token required unsecured")
-	config_filename  = flag.String("file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
+	config_filename  = flag.String("config_file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
+	git_root_folder  = flag.String("code_root_folder", "/app", "Root folder where all git projects reside (optional)")
 )
 
 // starting the http server from the GPRC generated code
@@ -67,7 +68,7 @@ func runGRPCServer() {
 
 	insecureServer := grpc.NewServer()
 
-	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer(*config_filename))
+	protoV1.RegisterWatchDogServer(insecureServer, watchDogServer.NewWatchDogGRPCServer(*config_filename, *git_root_folder))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(insecureServer)

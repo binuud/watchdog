@@ -1,0 +1,1 @@
+-d none -s -R vendor. -R node_modules. -R proto. -r \.go$

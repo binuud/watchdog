@@ -5,16 +5,6 @@ info:
   title: ""
   version: ""
 paths:
-  /v1/git/health:
-    get:
-      operationId: health
-      responses:
-        "200":
-          description: watchdog.Git.Health response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GitHealthResponse'
   /v1/watchdog/get:
     get:
       operationId: get
@@ -212,23 +202,6 @@ components:
       properties:
         summary:
           $ref: '#/components/schemas/DomainSummary'
-    GitHealthResponse:
-      type: object
-      properties:
-        createdAt:
-          type: integer
-          format: int64
-        numProjects:
-          type: integer
-          format: int64
-        status:
-          $ref: '#/components/schemas/GitHealthResponse.HealthStatus'
-    GitHealthResponse.HealthStatus:
-      type: string
-      enum:
-        - "HealthStatusIgnore"
-        - "Active"
-        - "Error"
     HealthResponse:
       type: object
       properties:

@@ -21,6 +21,7 @@ func readYaml(fileName string, domainWatch *watchdog.DomainWatch) {
 	if err != nil {
 		logrus.Fatalf("Malformed yaml file %s, %v", fileName, err)
 	}
+	logrus.Infof("%v", domainWatch)
 }
 
 func writeYaml(domainWatch *watchdog.DomainWatch, fileName string) {

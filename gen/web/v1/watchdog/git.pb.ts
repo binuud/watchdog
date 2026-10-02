@@ -4,6 +4,8 @@
 * This file is a generated Typescript file for GRPC Gateway, DO NOT MODIFY
 */
 
+import * as GoogleProtobufTimestamp from "../../google/protobuf/timestamp.pb"
+
 export enum GitProjectProjectStatus {
   IGNORE_PROJECT_STATUS = "IGNORE_PROJECT_STATUS",
   ACTIVE = "ACTIVE",
@@ -27,21 +29,24 @@ export type GitProject = {
   name?: string
   path?: string
   description?: string
-  repo?: string
+  org?: string
+  projecturl?: string
+  remoteurl?: string
   user?: string
   status?: GitProjectProjectStatus
 }
 
-export type GitStatusResponse = {
+export type GitProjectStatus = {
   branchName?: string
   upstreamBranch?: string
   aheadCount?: number
   behindCount?: number
   isClean?: boolean
-  numStaged?: string
+  numModified?: string
   numUnstaged?: string
   numUntracked?: string
   numIgnored?: string
+  numStashes?: string
   staged?: FileStatus[]
   unstaged?: FileStatus[]
   untracked?: string[]
@@ -52,4 +57,10 @@ export type FileStatus = {
   path?: string
   oldPath?: string
   status?: FileStatusStatusCode
+}
+
+export type GitProjectRow = {
+  project?: GitProject
+  status?: GitProjectStatus
+  createdAt?: GoogleProtobufTimestamp.Timestamp
 }

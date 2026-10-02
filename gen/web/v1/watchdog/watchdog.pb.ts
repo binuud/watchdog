@@ -5,6 +5,7 @@
 */
 
 import * as GoogleProtobufTimestamp from "../../google/protobuf/timestamp.pb"
+import * as WatchdogGit from "./git.pb"
 
 export enum CertificateStatusEnumCertStatus {
   EnumCertStatusIgnore = "EnumCertStatusIgnore",
@@ -24,6 +25,7 @@ export type DomainWatch = {
   name?: string
   refreshInterval?: string
   domains?: DomainItem[]
+  projects?: WatchdogGit.GitProject[]
 }
 
 export type EndpointStatus = {

@@ -9,6 +9,7 @@ option go_package = "github.com/binuud/watchdog/gen/go/v1/watchdog";
 
 // import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
+import "v1/watchdog/git.proto";
 
 message DomainItem {
 
@@ -27,6 +28,7 @@ message DomainWatch {
   // interval in seconds
   int64 refreshInterval = 2;
   repeated DomainItem domains = 11;
+  repeated GitProject projects = 12;
 }
 
 message EndpointStatus {
