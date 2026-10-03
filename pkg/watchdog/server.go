@@ -85,6 +85,42 @@ func (s *WatchDogGRPCServer) ListSummaries(ctx context.Context, in *protoV1.List
 
 }
 
+func (s *WatchDogGRPCServer) ListProjects(ctx context.Context, in *protoV1.ListProjectsRequest) (*protoV1.ListProjectsResponse, error) {
+
+	if in.Page < 1 {
+		in.Page = 1
+	}
+
+	fromIndex := (in.Page - 1) * in.PerPage
+	toIndex := fromIndex + in.PerPage
+	if toIndex > int64((len(s.Service.GitData) - 1)) {
+		toIndex = int64(len(s.Service.GitData))
+	}
+
+	projects := make([]*protoV1.GitProjectRow, 0)
+
+	logrus.Infof("Number of items %d Getting[%d:%d]", len(s.Service.GitData), fromIndex, toIndex)
+
+	// Check if indices are valid
+	if fromIndex < 0 || fromIndex >= toIndex {
+		return nil, fmt.Errorf("wrong indexes")
+	}
+
+	// Display elements from index i to j
+
+	for i := fromIndex; i < toIndex; i++ {
+		projects = append(projects, s.Service.GitData[i])
+	}
+
+	return &protoV1.ListProjectsResponse{
+		Page:    in.Page,
+		PerPage: in.PerPage,
+
+		Projects: projects,
+	}, nil
+
+}
+
 func (s *WatchDogGRPCServer) Health(ctx context.Context, in *protoV1.HealthRequest) (*protoV1.HealthResponse, error) {
 	healthResponse := &protoV1.HealthResponse{
 		NumDomains: int64(len(s.Service.Data)),

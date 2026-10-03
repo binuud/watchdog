@@ -166,17 +166,21 @@ When using docker image, the default entrypoint is the 'server'.
 Once server is running, REST api can be used for getting details of domains, refer to swagger interface 
 for details of the REST api's
 ```
-curl -X GET 'http://localhost:10080/v1/watchdog/getAll?page=1&perPage=10' | jq
+curl -X GET 'http://localhost:9080/v1/watchdog/getAll?page=1&perPage=10' | jq
+```
+
+```
+curl -X GET 'http://localhost:9080/v1/watchdog/getProjects?page=1&perPage=10' | jq
 ```
 
 Get Details of a particular domain
 ```
-curl -X GET 'http://localhost:10080/v1/watchdog/get?name=www.google.com' | jq
+curl -X GET 'http://localhost:9080/v1/watchdog/get?name=www.google.com' | jq
 ```
 
 ReFetch all the information in the background (non blocking)
 ```
-curl -X POST 'http://localhost:10080/v1/watchdog/reload' -d '{}'
+curl -X POST 'http://localhost:9080/v1/watchdog/reload' -d '{}'
 ```  
 
 ## Local Development

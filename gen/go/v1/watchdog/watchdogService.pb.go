@@ -73,7 +73,7 @@ func (x HealthResponse_HealthStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HealthResponse_HealthStatus.Descriptor instead.
 func (HealthResponse_HealthStatus) EnumDescriptor() ([]byte, []int) {
-	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{9, 0}
+	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{11, 0}
 }
 
 type ReloadRequest struct {
@@ -454,6 +454,120 @@ func (x *ListSummariesResponse) GetSummaries() []*DomainSummary {
 	return nil
 }
 
+type ListProjectsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// current page, page starts from 1
+	Page int64 `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	// number of items per page
+	PerPage       int64 `protobuf:"varint,2,opt,name=perPage,proto3" json:"perPage,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListProjectsRequest) Reset() {
+	*x = ListProjectsRequest{}
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListProjectsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListProjectsRequest) ProtoMessage() {}
+
+func (x *ListProjectsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListProjectsRequest.ProtoReflect.Descriptor instead.
+func (*ListProjectsRequest) Descriptor() ([]byte, []int) {
+	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListProjectsRequest) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListProjectsRequest) GetPerPage() int64 {
+	if x != nil {
+		return x.PerPage
+	}
+	return 0
+}
+
+type ListProjectsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int64                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PerPage       int64                  `protobuf:"varint,2,opt,name=perPage,proto3" json:"perPage,omitempty"`
+	Projects      []*GitProjectRow       `protobuf:"bytes,3,rep,name=projects,proto3" json:"projects,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListProjectsResponse) Reset() {
+	*x = ListProjectsResponse{}
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListProjectsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListProjectsResponse) ProtoMessage() {}
+
+func (x *ListProjectsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListProjectsResponse.ProtoReflect.Descriptor instead.
+func (*ListProjectsResponse) Descriptor() ([]byte, []int) {
+	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListProjectsResponse) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListProjectsResponse) GetPerPage() int64 {
+	if x != nil {
+		return x.PerPage
+	}
+	return 0
+}
+
+func (x *ListProjectsResponse) GetProjects() []*GitProjectRow {
+	if x != nil {
+		return x.Projects
+	}
+	return nil
+}
+
 type HealthRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -462,7 +576,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[8]
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -474,7 +588,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[8]
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -487,7 +601,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{8}
+	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{10}
 }
 
 type HealthResponse struct {
@@ -502,7 +616,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[9]
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -514,7 +628,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[9]
+	mi := &file_v1_watchdog_watchdogService_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -527,7 +641,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{9}
+	return file_v1_watchdog_watchdogService_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *HealthResponse) GetCreatedAt() int64 {
@@ -555,7 +669,7 @@ var File_v1_watchdog_watchdogService_proto protoreflect.FileDescriptor
 
 const file_v1_watchdog_watchdogService_proto_rawDesc = "" +
 	"\n" +
-	"!v1/watchdog/watchdogService.proto\x12\bwatchdog\x1a\x1cgoogle/api/annotations.proto\x1a\x1av1/watchdog/watchdog.proto\"\x0f\n" +
+	"!v1/watchdog/watchdogService.proto\x12\bwatchdog\x1a\x1cgoogle/api/annotations.proto\x1a\x1av1/watchdog/watchdog.proto\x1a\x15v1/watchdog/git.proto\"\x0f\n" +
 	"\rReloadRequest\"\x10\n" +
 	"\x0eReloadResponse\"4\n" +
 	"\n" +
@@ -575,7 +689,14 @@ const file_v1_watchdog_watchdogService_proto_rawDesc = "" +
 	"\x15ListSummariesResponse\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x18\n" +
 	"\aperPage\x18\x02 \x01(\x03R\aperPage\x125\n" +
-	"\tsummaries\x18\x03 \x03(\v2\x17.watchdog.DomainSummaryR\tsummaries\"\x0f\n" +
+	"\tsummaries\x18\x03 \x03(\v2\x17.watchdog.DomainSummaryR\tsummaries\"C\n" +
+	"\x13ListProjectsRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x18\n" +
+	"\aperPage\x18\x02 \x01(\x03R\aperPage\"y\n" +
+	"\x14ListProjectsResponse\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x18\n" +
+	"\aperPage\x18\x02 \x01(\x03R\aperPage\x123\n" +
+	"\bprojects\x18\x03 \x03(\v2\x17.watchdog.GitProjectRowR\bprojects\"\x0f\n" +
 	"\rHealthRequest\"\xcc\x01\n" +
 	"\x0eHealthResponse\x12\x1c\n" +
 	"\tcreatedAt\x18\x01 \x01(\x03R\tcreatedAt\x12\x1e\n" +
@@ -587,13 +708,14 @@ const file_v1_watchdog_watchdogService_proto_rawDesc = "" +
 	"\x12HealthStatusIgnore\x10\x00\x12\n" +
 	"\n" +
 	"\x06Active\x10\x01\x12\t\n" +
-	"\x05Error\x10\x022\xe8\x03\n" +
+	"\x05Error\x10\x022\xd9\x04\n" +
 	"\bWatchDog\x12[\n" +
 	"\x06Reload\x12\x17.watchdog.ReloadRequest\x1a\x18.watchdog.ReloadResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/v1/watchdog/reload\x12L\n" +
 	"\x03Get\x12\x14.watchdog.GetRequest\x1a\x15.watchdog.GetResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/watchdog/get\x12h\n" +
 	"\n" +
 	"GetDetails\x12\x1b.watchdog.GetDetailsRequest\x1a\x1c.watchdog.GetDetailsResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/watchdog/getDetails\x12m\n" +
-	"\rListSummaries\x12\x1e.watchdog.ListSummariesRequest\x1a\x1f.watchdog.ListSummariesResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/watchdog/getAll\x12X\n" +
+	"\rListSummaries\x12\x1e.watchdog.ListSummariesRequest\x1a\x1f.watchdog.ListSummariesResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/watchdog/getAll\x12o\n" +
+	"\fListProjects\x12\x1d.watchdog.ListProjectsRequest\x1a\x1e.watchdog.ListProjectsResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/watchdog/getProjects\x12X\n" +
 	"\x06Health\x12\x17.watchdog.HealthRequest\x1a\x18.watchdog.HealthResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/watchdog/healthB/Z-github.com/binuud/watchdog/gen/go/v1/watchdogb\x06proto3"
 
 var (
@@ -609,7 +731,7 @@ func file_v1_watchdog_watchdogService_proto_rawDescGZIP() []byte {
 }
 
 var file_v1_watchdog_watchdogService_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_v1_watchdog_watchdogService_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_v1_watchdog_watchdogService_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_v1_watchdog_watchdogService_proto_goTypes = []any{
 	(HealthResponse_HealthStatus)(0), // 0: watchdog.HealthResponse.HealthStatus
 	(*ReloadRequest)(nil),            // 1: watchdog.ReloadRequest
@@ -620,31 +742,37 @@ var file_v1_watchdog_watchdogService_proto_goTypes = []any{
 	(*GetDetailsResponse)(nil),       // 6: watchdog.GetDetailsResponse
 	(*ListSummariesRequest)(nil),     // 7: watchdog.ListSummariesRequest
 	(*ListSummariesResponse)(nil),    // 8: watchdog.ListSummariesResponse
-	(*HealthRequest)(nil),            // 9: watchdog.HealthRequest
-	(*HealthResponse)(nil),           // 10: watchdog.HealthResponse
-	(*DomainSummary)(nil),            // 11: watchdog.DomainSummary
-	(*DomainRow)(nil),                // 12: watchdog.DomainRow
+	(*ListProjectsRequest)(nil),      // 9: watchdog.ListProjectsRequest
+	(*ListProjectsResponse)(nil),     // 10: watchdog.ListProjectsResponse
+	(*HealthRequest)(nil),            // 11: watchdog.HealthRequest
+	(*HealthResponse)(nil),           // 12: watchdog.HealthResponse
+	(*DomainSummary)(nil),            // 13: watchdog.DomainSummary
+	(*DomainRow)(nil),                // 14: watchdog.DomainRow
+	(*GitProjectRow)(nil),            // 15: watchdog.GitProjectRow
 }
 var file_v1_watchdog_watchdogService_proto_depIdxs = []int32{
-	11, // 0: watchdog.GetResponse.summary:type_name -> watchdog.DomainSummary
-	12, // 1: watchdog.GetDetailsResponse.domain:type_name -> watchdog.DomainRow
-	11, // 2: watchdog.ListSummariesResponse.summaries:type_name -> watchdog.DomainSummary
-	0,  // 3: watchdog.HealthResponse.status:type_name -> watchdog.HealthResponse.HealthStatus
-	1,  // 4: watchdog.WatchDog.Reload:input_type -> watchdog.ReloadRequest
-	3,  // 5: watchdog.WatchDog.Get:input_type -> watchdog.GetRequest
-	5,  // 6: watchdog.WatchDog.GetDetails:input_type -> watchdog.GetDetailsRequest
-	7,  // 7: watchdog.WatchDog.ListSummaries:input_type -> watchdog.ListSummariesRequest
-	9,  // 8: watchdog.WatchDog.Health:input_type -> watchdog.HealthRequest
-	2,  // 9: watchdog.WatchDog.Reload:output_type -> watchdog.ReloadResponse
-	4,  // 10: watchdog.WatchDog.Get:output_type -> watchdog.GetResponse
-	6,  // 11: watchdog.WatchDog.GetDetails:output_type -> watchdog.GetDetailsResponse
-	8,  // 12: watchdog.WatchDog.ListSummaries:output_type -> watchdog.ListSummariesResponse
-	10, // 13: watchdog.WatchDog.Health:output_type -> watchdog.HealthResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	13, // 0: watchdog.GetResponse.summary:type_name -> watchdog.DomainSummary
+	14, // 1: watchdog.GetDetailsResponse.domain:type_name -> watchdog.DomainRow
+	13, // 2: watchdog.ListSummariesResponse.summaries:type_name -> watchdog.DomainSummary
+	15, // 3: watchdog.ListProjectsResponse.projects:type_name -> watchdog.GitProjectRow
+	0,  // 4: watchdog.HealthResponse.status:type_name -> watchdog.HealthResponse.HealthStatus
+	1,  // 5: watchdog.WatchDog.Reload:input_type -> watchdog.ReloadRequest
+	3,  // 6: watchdog.WatchDog.Get:input_type -> watchdog.GetRequest
+	5,  // 7: watchdog.WatchDog.GetDetails:input_type -> watchdog.GetDetailsRequest
+	7,  // 8: watchdog.WatchDog.ListSummaries:input_type -> watchdog.ListSummariesRequest
+	9,  // 9: watchdog.WatchDog.ListProjects:input_type -> watchdog.ListProjectsRequest
+	11, // 10: watchdog.WatchDog.Health:input_type -> watchdog.HealthRequest
+	2,  // 11: watchdog.WatchDog.Reload:output_type -> watchdog.ReloadResponse
+	4,  // 12: watchdog.WatchDog.Get:output_type -> watchdog.GetResponse
+	6,  // 13: watchdog.WatchDog.GetDetails:output_type -> watchdog.GetDetailsResponse
+	8,  // 14: watchdog.WatchDog.ListSummaries:output_type -> watchdog.ListSummariesResponse
+	10, // 15: watchdog.WatchDog.ListProjects:output_type -> watchdog.ListProjectsResponse
+	12, // 16: watchdog.WatchDog.Health:output_type -> watchdog.HealthResponse
+	11, // [11:17] is the sub-list for method output_type
+	5,  // [5:11] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_v1_watchdog_watchdogService_proto_init() }
@@ -653,13 +781,14 @@ func file_v1_watchdog_watchdogService_proto_init() {
 		return
 	}
 	file_v1_watchdog_watchdog_proto_init()
+	file_v1_watchdog_git_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_watchdog_watchdogService_proto_rawDesc), len(file_v1_watchdog_watchdogService_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

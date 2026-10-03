@@ -5,6 +5,7 @@
 */
 
 import * as fm from "../../fetch.pb"
+import * as WatchdogGit from "./git.pb"
 import * as WatchdogWatchdog from "./watchdog.pb"
 
 export enum HealthResponseHealthStatus {
@@ -48,6 +49,17 @@ export type ListSummariesResponse = {
   summaries?: WatchdogWatchdog.DomainSummary[]
 }
 
+export type ListProjectsRequest = {
+  page?: string
+  perPage?: string
+}
+
+export type ListProjectsResponse = {
+  page?: string
+  perPage?: string
+  projects?: WatchdogGit.GitProjectRow[]
+}
+
 export type HealthRequest = {
 }
 
@@ -69,6 +81,9 @@ export class WatchDog {
   }
   static ListSummaries(req: ListSummariesRequest, initReq?: fm.InitReq): Promise<ListSummariesResponse> {
     return fm.fetchReq<ListSummariesRequest, ListSummariesResponse>(`/v1/watchdog/getAll?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})
+  }
+  static ListProjects(req: ListProjectsRequest, initReq?: fm.InitReq): Promise<ListProjectsResponse> {
+    return fm.fetchReq<ListProjectsRequest, ListProjectsResponse>(`/v1/watchdog/getProjects?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})
   }
   static Health(req: HealthRequest, initReq?: fm.InitReq): Promise<HealthResponse> {
     return fm.fetchReq<HealthRequest, HealthResponse>(`/v1/watchdog/health?${fm.renderURLSearchParams(req, [])}`, {...initReq, method: "GET"})

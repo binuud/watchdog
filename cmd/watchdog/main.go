@@ -11,6 +11,7 @@ import (
 var (
 	config_filename = flag.String("config_file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
 	git_root_folder = flag.String("code_root_folder", "/app", "Root folder where all git projects reside (optional)")
+	GITHUB_TOKEN    = flag.String("GITHUB_TOKEN", "", "GitHub Token, needed for api access to remote github (optional)")
 	pVerbose        = flag.Bool("v", false, "Detailed logs")
 )
 
@@ -18,10 +19,6 @@ func main() {
 
 	fmt.Println("Usage: watchdogServer -h   For Help")
 	fmt.Print("\n\n")
-
-	// Define a string flag for the file name
-	config_filename = flag.String("config_file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
-	git_root_folder = flag.String("code_root_folder", "/app", "Root folder where all git projects reside (optional)")
 
 	// Parse the flags
 	flag.Parse()
@@ -44,7 +41,7 @@ func main() {
                                                                 
     `)
 	fmt.Println("Fetching data... (Single Thread)")
-	w := watchDogServer.NewWatchDogService(*config_filename, *git_root_folder)
+	w := watchDogServer.NewWatchDogService(*config_filename, *git_root_folder, *GITHUB_TOKEN)
 	w.CheckDomains()
 	// w.PrintSummary() // normal print blocks
 	w.PrintSummaryTable() // uses 3rd party pretty table

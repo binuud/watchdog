@@ -64,6 +64,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetDetailsResponse'
+  /v1/watchdog/getProjects:
+    get:
+      operationId: listProjects
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: perPage
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: watchdog.WatchDog.ListProjects response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProjectsResponse'
   /v1/watchdog/health:
     get:
       operationId: health
@@ -192,6 +213,26 @@ components:
         domainExpiryDays:
           type: integer
           format: int64
+    FileStatus:
+      type: object
+      properties:
+        path:
+          type: string
+        oldPath:
+          type: string
+        status:
+          $ref: '#/components/schemas/FileStatus.StatusCode'
+    FileStatus.StatusCode:
+      type: string
+      enum:
+        - "STATUS_CODE_UNSPECIFIED"
+        - "MODIFIED"
+        - "ADDED"
+        - "DELETED"
+        - "RENAMED"
+        - "COPIED"
+        - "TYPE_CHANGED"
+        - "UNMERGED"
     GetDetailsResponse:
       type: object
       properties:
@@ -202,6 +243,98 @@ components:
       properties:
         summary:
           $ref: '#/components/schemas/DomainSummary'
+    GitProject:
+      type: object
+      properties:
+        uuid:
+          type: string
+        name:
+          type: string
+        path:
+          type: string
+        description:
+          type: string
+        org:
+          type: string
+        projecturl:
+          type: string
+        remoteurl:
+          type: string
+        user:
+          type: string
+        status:
+          $ref: '#/components/schemas/GitProject.ProjectStatus'
+    GitProject.ProjectStatus:
+      type: string
+      enum:
+        - "IGNORE_PROJECT_STATUS"
+        - "ACTIVE"
+        - "INACTIVE"
+        - "ARCHIVE"
+    GitProjectRow:
+      type: object
+      properties:
+        project:
+          $ref: '#/components/schemas/GitProject'
+        status:
+          $ref: '#/components/schemas/GitProjectStatus'
+        createdAt:
+          type: string
+          format: date-time
+    GitProjectStatus:
+      type: object
+      properties:
+        branchName:
+          type: string
+        upstreamBranch:
+          type: string
+        aheadCount:
+          type: integer
+          format: int32
+        behindCount:
+          type: integer
+          format: int32
+        isClean:
+          type: boolean
+        numModified:
+          type: integer
+          format: int64
+        numUnstaged:
+          type: integer
+          format: int64
+        numUntracked:
+          type: integer
+          format: int64
+        numIgnored:
+          type: integer
+          format: int64
+        numStashes:
+          type: integer
+          format: int64
+        numPrOpen:
+          type: integer
+          format: int64
+        numIssuesOpen:
+          type: integer
+          format: int64
+        staged:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileStatus'
+        unstaged:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileStatus'
+        untracked:
+          type: array
+          items:
+            type: string
+        ignored:
+          type: array
+          items:
+            type: string
+        commonAncestor:
+          type: string
     HealthResponse:
       type: object
       properties:
@@ -219,6 +352,19 @@ components:
         - "HealthStatusIgnore"
         - "Active"
         - "Error"
+    ListProjectsResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int64
+        perPage:
+          type: integer
+          format: int64
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/GitProjectRow'
     ListSummariesResponse:
       type: object
       properties:

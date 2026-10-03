@@ -28,6 +28,7 @@ const (
 	WatchDog_Get_FullMethodName           = "/watchdog.WatchDog/Get"
 	WatchDog_GetDetails_FullMethodName    = "/watchdog.WatchDog/GetDetails"
 	WatchDog_ListSummaries_FullMethodName = "/watchdog.WatchDog/ListSummaries"
+	WatchDog_ListProjects_FullMethodName  = "/watchdog.WatchDog/ListProjects"
 	WatchDog_Health_FullMethodName        = "/watchdog.WatchDog/Health"
 )
 
@@ -42,6 +43,7 @@ type WatchDogClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetDetails(ctx context.Context, in *GetDetailsRequest, opts ...grpc.CallOption) (*GetDetailsResponse, error)
 	ListSummaries(ctx context.Context, in *ListSummariesRequest, opts ...grpc.CallOption) (*ListSummariesResponse, error)
+	ListProjects(ctx context.Context, in *ListProjectsRequest, opts ...grpc.CallOption) (*ListProjectsResponse, error)
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
@@ -93,6 +95,16 @@ func (c *watchDogClient) ListSummaries(ctx context.Context, in *ListSummariesReq
 	return out, nil
 }
 
+func (c *watchDogClient) ListProjects(ctx context.Context, in *ListProjectsRequest, opts ...grpc.CallOption) (*ListProjectsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProjectsResponse)
+	err := c.cc.Invoke(ctx, WatchDog_ListProjects_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *watchDogClient) Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HealthResponse)
@@ -114,6 +126,7 @@ type WatchDogServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetDetails(context.Context, *GetDetailsRequest) (*GetDetailsResponse, error)
 	ListSummaries(context.Context, *ListSummariesRequest) (*ListSummariesResponse, error)
+	ListProjects(context.Context, *ListProjectsRequest) (*ListProjectsResponse, error)
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedWatchDogServer()
 }
@@ -136,6 +149,9 @@ func (UnimplementedWatchDogServer) GetDetails(context.Context, *GetDetailsReques
 }
 func (UnimplementedWatchDogServer) ListSummaries(context.Context, *ListSummariesRequest) (*ListSummariesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSummaries not implemented")
+}
+func (UnimplementedWatchDogServer) ListProjects(context.Context, *ListProjectsRequest) (*ListProjectsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListProjects not implemented")
 }
 func (UnimplementedWatchDogServer) Health(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Health not implemented")
@@ -233,6 +249,24 @@ func _WatchDog_ListSummaries_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WatchDog_ListProjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProjectsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WatchDogServer).ListProjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WatchDog_ListProjects_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WatchDogServer).ListProjects(ctx, req.(*ListProjectsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WatchDog_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthRequest)
 	if err := dec(in); err != nil {
@@ -273,6 +307,10 @@ var WatchDog_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListSummaries",
 			Handler:    _WatchDog_ListSummaries_Handler,
+		},
+		{
+			MethodName: "ListProjects",
+			Handler:    _WatchDog_ListProjects_Handler,
 		},
 		{
 			MethodName: "Health",
