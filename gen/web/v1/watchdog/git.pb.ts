@@ -47,10 +47,13 @@ export type GitProjectStatus = {
   numUntracked?: string
   numIgnored?: string
   numStashes?: string
+  numPrOpen?: string
+  numIssuesOpen?: string
   staged?: FileStatus[]
   unstaged?: FileStatus[]
   untracked?: string[]
   ignored?: string[]
+  commonAncestor?: string
 }
 
 export type FileStatus = {

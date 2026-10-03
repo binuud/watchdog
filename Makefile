@@ -4,8 +4,12 @@
 # You can change the default config with `make cnf="config_special.env" build`
 # use build_staging.env for staging server (local too)
 
-### WARNING ### NOT-A-PRIVATE-REPO ##########
+### WARNING ### PUBLIC-REPO ##########
 
+# Optional environmental variables
+cnf ?= .local.env
+
+GITHUB_TOKEN=""
 REPO=dronasys
 APP_NAME ?= watchdog
 
@@ -17,6 +21,10 @@ GOLANG_IMAGE=golang:1.27.1
 TAGGED_NAME = $(REPO)/$(APP_NAME)
 
 MULTI_PLATFORM_DOCKER = --platform=linux/amd64,linux/arm64
+
+## override any variable with .local.env
+include $(cnf)
+export $(shell sed 's/=.*//' $(cnf))
 
 ## Needs protoc to be installed
 
@@ -81,8 +89,11 @@ run: ## Run code once, for auto run on code change
 run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go -file $(PWD)/local/myDomains.yaml
 
-run-server: ## Start GRPC and HTTP server
-	go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080
+run-server: ## Start GRPC and HTTP server for watchdog
+	go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
+
+run-scratch: ## run go lang scratch project
+	go run cmd/scratch/main.go -GITHUB_TOKEN $(GITHUB_TOKEN)
 
 run-docker: ## run docker image as server
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
@@ -90,8 +101,7 @@ run-docker: ## run docker image as server
 run-docker-once: ## run docker image once
 	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
 
-run-scratch: ## run go lang scratch project
-	go run cmd/scratch/main.go 
+
 
 swagger-ui: ## launch swagger ui
 	docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.json -e SWAGGER_FILE=/tmp/swagger.json docker.swagger.io/swaggerapi/swagger-editor

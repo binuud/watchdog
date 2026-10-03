@@ -8,14 +8,20 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	config_filename = flag.String("config_file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
+	git_root_folder = flag.String("code_root_folder", "/app", "Root folder where all git projects reside (optional)")
+	pVerbose        = flag.Bool("v", false, "Detailed logs")
+)
+
 func main() {
 
 	fmt.Println("Usage: watchdogServer -h   For Help")
 	fmt.Print("\n\n")
 
 	// Define a string flag for the file name
-	fileName := flag.String("file", "config.yaml", "Config file path (config.yaml) (optional)")
-	pVerbose := flag.Bool("v", false, "Detailed logs")
+	config_filename = flag.String("config_file", "./configs/config.yaml", "Config file path (config.yaml) (optional)")
+	git_root_folder = flag.String("code_root_folder", "/app", "Root folder where all git projects reside (optional)")
 
 	// Parse the flags
 	flag.Parse()
@@ -26,7 +32,7 @@ func main() {
 		log.SetLevel(log.WarnLevel)
 	}
 
-	fmt.Println("Using config file ", *fileName)
+	fmt.Println("Using config file ", *config_filename)
 
 	// print created using https://www.fancytextpro.com/BigTextGenerator/Cyberlarge
 	fmt.Println(`
@@ -38,7 +44,7 @@ func main() {
                                                                 
     `)
 	fmt.Println("Fetching data... (Single Thread)")
-	w := watchDogServer.NewWatchDogService(*fileName)
+	w := watchDogServer.NewWatchDogService(*config_filename, *git_root_folder)
 	w.CheckDomains()
 	// w.PrintSummary() // normal print blocks
 	w.PrintSummaryTable() // uses 3rd party pretty table

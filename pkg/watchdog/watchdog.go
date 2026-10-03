@@ -11,6 +11,7 @@ import (
 
 type WatchDogService struct {
 	RootGitFolder string
+	GitHubToken   string
 
 	// cache settings for the watcher
 	DomainWatch *watchdog.DomainWatch
@@ -22,11 +23,12 @@ type WatchDogService struct {
 	GitData []*watchdog.GitProjectRow
 }
 
-func NewWatchDogService(fileName string, rootGitFolder string) *WatchDogService {
+func NewWatchDogService(fileName string, rootGitFolder string, gitHubToken string) *WatchDogService {
 
 	serverObj := &WatchDogService{}
 	w := serverObj.initFromConfig(fileName)
 	w.RootGitFolder = rootGitFolder
+	w.GitHubToken = gitHubToken
 	return w
 
 }
