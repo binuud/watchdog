@@ -75,6 +75,9 @@ message GitProjectStatus {
   int64 num_untracked = 13;
   int64 num_ignored = 14;
   int64 num_stashes = 15;
+
+  int64 num_pr_open = 16;
+  int64 num_issues_open = 17;
   
   // Changes to be committed
   repeated FileStatus staged = 21;   
@@ -86,9 +89,15 @@ message GitProjectStatus {
   repeated string untracked = 23; 
   
   // Paths explicitly ignored (if requested)
-  repeated string ignored = 24;       
+  repeated string ignored = 24;   
+
+  // common ancestor in local and remote branch
+  // when remote goes ahead to the local branch
+  string common_ancestor = 30;    
+
 
 }
+
 
 // Represents an individual file change state.
 message FileStatus {
@@ -119,7 +128,9 @@ message FileStatus {
 
 // used for persisting git project information
 message GitProjectRow {
+
   GitProject project = 1;
   GitProjectStatus status = 2;
   google.protobuf.Timestamp createdAt = 11;
+
 }

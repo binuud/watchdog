@@ -279,11 +279,13 @@ type GitProjectStatus struct {
 	// True if the working tree is clean
 	IsClean bool `protobuf:"varint,5,opt,name=is_clean,json=isClean,proto3" json:"is_clean,omitempty"`
 	// numbers of modified, unstaged, untracked, ignored files
-	NumModified  int64 `protobuf:"varint,11,opt,name=num_modified,json=numModified,proto3" json:"num_modified,omitempty"`
-	NumUnstaged  int64 `protobuf:"varint,12,opt,name=num_unstaged,json=numUnstaged,proto3" json:"num_unstaged,omitempty"`
-	NumUntracked int64 `protobuf:"varint,13,opt,name=num_untracked,json=numUntracked,proto3" json:"num_untracked,omitempty"`
-	NumIgnored   int64 `protobuf:"varint,14,opt,name=num_ignored,json=numIgnored,proto3" json:"num_ignored,omitempty"`
-	NumStashes   int64 `protobuf:"varint,15,opt,name=num_stashes,json=numStashes,proto3" json:"num_stashes,omitempty"`
+	NumModified   int64 `protobuf:"varint,11,opt,name=num_modified,json=numModified,proto3" json:"num_modified,omitempty"`
+	NumUnstaged   int64 `protobuf:"varint,12,opt,name=num_unstaged,json=numUnstaged,proto3" json:"num_unstaged,omitempty"`
+	NumUntracked  int64 `protobuf:"varint,13,opt,name=num_untracked,json=numUntracked,proto3" json:"num_untracked,omitempty"`
+	NumIgnored    int64 `protobuf:"varint,14,opt,name=num_ignored,json=numIgnored,proto3" json:"num_ignored,omitempty"`
+	NumStashes    int64 `protobuf:"varint,15,opt,name=num_stashes,json=numStashes,proto3" json:"num_stashes,omitempty"`
+	NumPrOpen     int64 `protobuf:"varint,16,opt,name=num_pr_open,json=numPrOpen,proto3" json:"num_pr_open,omitempty"`
+	NumIssuesOpen int64 `protobuf:"varint,17,opt,name=num_issues_open,json=numIssuesOpen,proto3" json:"num_issues_open,omitempty"`
 	// Changes to be committed
 	Staged []*FileStatus `protobuf:"bytes,21,rep,name=staged,proto3" json:"staged,omitempty"`
 	// Changes not staged for commit
@@ -291,9 +293,12 @@ type GitProjectStatus struct {
 	// Paths of completely new, untracked files
 	Untracked []string `protobuf:"bytes,23,rep,name=untracked,proto3" json:"untracked,omitempty"`
 	// Paths explicitly ignored (if requested)
-	Ignored       []string `protobuf:"bytes,24,rep,name=ignored,proto3" json:"ignored,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Ignored []string `protobuf:"bytes,24,rep,name=ignored,proto3" json:"ignored,omitempty"`
+	// common ancestor in local and remote branch
+	// when remote goes ahead to the local branch
+	CommonAncestor string `protobuf:"bytes,30,opt,name=common_ancestor,json=commonAncestor,proto3" json:"common_ancestor,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GitProjectStatus) Reset() {
@@ -396,6 +401,20 @@ func (x *GitProjectStatus) GetNumStashes() int64 {
 	return 0
 }
 
+func (x *GitProjectStatus) GetNumPrOpen() int64 {
+	if x != nil {
+		return x.NumPrOpen
+	}
+	return 0
+}
+
+func (x *GitProjectStatus) GetNumIssuesOpen() int64 {
+	if x != nil {
+		return x.NumIssuesOpen
+	}
+	return 0
+}
+
 func (x *GitProjectStatus) GetStaged() []*FileStatus {
 	if x != nil {
 		return x.Staged
@@ -422,6 +441,13 @@ func (x *GitProjectStatus) GetIgnored() []string {
 		return x.Ignored
 	}
 	return nil
+}
+
+func (x *GitProjectStatus) GetCommonAncestor() string {
+	if x != nil {
+		return x.CommonAncestor
+	}
+	return ""
 }
 
 // Represents an individual file change state.
@@ -572,7 +598,7 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bINACTIVE\x10\x02\x12\v\n" +
-	"\aARCHIVE\x10\x03\"\x80\x04\n" +
+	"\aARCHIVE\x10\x03\"\xf1\x04\n" +
 	"\x10GitProjectStatus\x12\x1f\n" +
 	"\vbranch_name\x18\x01 \x01(\tR\n" +
 	"branchName\x12'\n" +
@@ -587,11 +613,14 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\vnum_ignored\x18\x0e \x01(\x03R\n" +
 	"numIgnored\x12\x1f\n" +
 	"\vnum_stashes\x18\x0f \x01(\x03R\n" +
-	"numStashes\x12,\n" +
+	"numStashes\x12\x1e\n" +
+	"\vnum_pr_open\x18\x10 \x01(\x03R\tnumPrOpen\x12&\n" +
+	"\x0fnum_issues_open\x18\x11 \x01(\x03R\rnumIssuesOpen\x12,\n" +
 	"\x06staged\x18\x15 \x03(\v2\x14.watchdog.FileStatusR\x06staged\x120\n" +
 	"\bunstaged\x18\x16 \x03(\v2\x14.watchdog.FileStatusR\bunstaged\x12\x1c\n" +
 	"\tuntracked\x18\x17 \x03(\tR\tuntracked\x12\x18\n" +
-	"\aignored\x18\x18 \x03(\tR\aignored\"\xff\x01\n" +
+	"\aignored\x18\x18 \x03(\tR\aignored\x12'\n" +
+	"\x0fcommon_ancestor\x18\x1e \x01(\tR\x0ecommonAncestor\"\xff\x01\n" +
 	"\n" +
 	"FileStatus\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\x12\x19\n" +

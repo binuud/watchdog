@@ -7,7 +7,7 @@ Work in progress.
 
 Sample Output
 ```
-usage: watchdog --file [filename-with-path]
+usage: watchdog --config-file [filename-with-path] --code_root_folder [absolute path of folder containing code]
 Using config file  config.yaml
 
 
@@ -130,12 +130,12 @@ Hope the yaml is self explanatory.
 
 * single run mode
 ```
-watchdog --file [PATH-TO-FILE]/config.yaml
+watchdog --config-file [filename-with-path] --code_root_folder [absolute path of folder containing code]
 ```
 
 * server mode
 ```
-watchdogServer -v -grpc_port 10090 -http_port 10080 --file config.yaml
+watchdogServer -v -grpc_port 10090 -http_port 10080 --config-file [filename-with-path] --code_root_folder [absolute path of folder containing code]
 ```
 
 
@@ -226,3 +226,9 @@ Usage videos will be uploaded here, this tool will be available as a AI Module o
 ## VSCode
 
 * Dev Containers - for launching development containers
+
+## .local.env
+
+```
+GITHUB_TOKEN=[GITHUB API TOKEN]
+```

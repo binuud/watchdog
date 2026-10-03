@@ -28,6 +28,12 @@ domains:
   #     - https://www.dronasys.com
 projects:
   - uuid: ""
+    name: rustai
+    org: binuud
+    user: binuud
+    path: Code/ai/rustai
+    projecturl: "https://github.com/binuud/rustai"  
+  - uuid: ""
     name: dev-tools
     org: binuud
     user: binuud
@@ -39,3 +45,4 @@ projects:
     user: binuud
     path: Code/local/containers
     projecturl: "https://github.com/binuud/containers"
+  

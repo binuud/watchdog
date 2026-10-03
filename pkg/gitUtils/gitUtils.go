@@ -5,27 +5,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/binuud/watchdog/gen/go/v1/watchdog"
 	"github.com/go-git/go-git/v6"
 	"github.com/go-git/go-git/v6/plumbing"
+	"github.com/go-git/go-git/v6/plumbing/client"
+	"github.com/go-git/go-git/v6/plumbing/object"
+	"github.com/go-git/go-git/v6/plumbing/storer"
+	"github.com/go-git/go-git/v6/plumbing/transport/http"
 	"github.com/google/go-github/v92/github"
 	"github.com/sirupsen/logrus"
 )
-
-func UpdateGitProjects(projectRow *watchdog.GitProjectRow, rootGitFolder string) error {
-
-	err := SummarizeGitStatus(projectRow, rootGitFolder)
-
-	logrus.Infof("Repo Status %s, %v", projectRow.Project.Name, projectRow.Status)
-	logrus.Infof("Project details %v", projectRow)
-
-	return err
-
-}
 
 func GetEmtpyGitProjectStatus() *watchdog.GitProjectStatus {
 	return &watchdog.GitProjectStatus{
@@ -38,87 +30,8 @@ func GetEmtpyGitProjectStatus() *watchdog.GitProjectStatus {
 		NumUnstaged:    0,
 		NumUntracked:   0,
 		NumIgnored:     0,
+		CommonAncestor: "",
 	}
-}
-
-func SummarizeGitStatus(projectRow *watchdog.GitProjectRow, rootGitFolder string) error {
-
-	absolutePath := filepath.Join(rootGitFolder, projectRow.Project.Path)
-
-	projectRow.Status = GetEmtpyGitProjectStatus()
-
-	logrus.Infof("Getting status of git folder %s", absolutePath)
-
-	// get the git repo associated with the path
-	repo, err := git.PlainOpen(absolutePath)
-	if err != nil {
-		return err
-	}
-
-	// Get the working tree for the repository
-	worktree, err := repo.Worktree()
-	if err != nil {
-		return err
-	}
-
-	// Since many users use a global config for user, do not read from local repo config
-
-	// user, err := GetGitUser(repo)
-	// if err != nil {
-	// 	logrus.Errorf("Cannot get git user details for repo %s, err %v", absolutePath, err)
-	// 	return err
-	// }
-
-	// projectRow.Project.User = user
-
-	repoUrl, err := GetRepoMetadata(repo)
-	if err != nil {
-		logrus.Errorf("Cannot get git repo meta details for repo %s, err %v", absolutePath, err)
-		return err
-	}
-
-	projectRow.Project.Remoteurl = repoUrl
-
-	// read the stash count
-	stashCount, err := GetStashCount(worktree)
-	if err != nil {
-		return err
-	}
-	projectRow.Status.NumStashes = int64(stashCount)
-
-	status, err := GetGitStatus(worktree)
-	if err != nil {
-		logrus.Errorf("Cannot get git status for repo %s, err %v", absolutePath, err)
-		return err
-	}
-
-	if status == nil {
-		return nil
-	}
-
-	projectRow.Status.IsClean = false
-
-	for filePath, fileStatus := range status {
-
-		// fileStatus.Staging tells you the status in the index
-		// fileStatus.Worktree tells you the status in the working directory
-
-		switch fileStatus.Worktree {
-		case git.Added:
-			projectRow.Status.NumUntracked++
-		case git.Untracked:
-			projectRow.Status.NumUntracked++
-		case git.Modified:
-			projectRow.Status.NumModified++
-		}
-
-		fmt.Printf("File: %s | Staging: %c | Worktree: %c\n",
-			filePath, fileStatus.Staging, fileStatus.Worktree)
-
-	}
-
-	return nil
-
 }
 
 func GetGitStatus(worktree *git.Worktree) (git.Status, error) {
@@ -196,90 +109,155 @@ func GetRepoMetadata(localRepo *git.Repository) (string, error) {
 	return url, nil
 }
 
-func GetIssuesPullrequests(path string, owner string, repo string) {
+func GetGitOpenIssues(client *github.Client, owner *string, repo *string) (int, error) {
 
 	ctx := context.Background()
 
-	// Automatically extract repository information from your local environment
-	// owner, repo, err := GetRepoMetadata(path)
-	// if err != nil {
-	// 	log.Fatalf("Error reading current project context: %v", err)
-	// }
-	// fmt.Printf("Detected Local Project Context: %s/%s\n", owner, repo)
-
-	// Initialize a standard GitHub client.
-	// For production, authenticate your client to prevent rate limits: github.NewClient(nil).WithAuthToken("your_token")
-	client, err := github.NewClient()
-	if err != nil {
-		log.Fatalf("Error creating client: %v", err)
-	}
-
-	// owner := "go-git"
-	// repo := "go-git"
-
-	// 1. Fetch pure Open Pull Requests count using a search query
-	prQuery := fmt.Sprintf("repo:%s/%s is:pr state:open", owner, repo)
-	prResult, _, err := client.Search.Issues(ctx, prQuery, &github.SearchOptions{
-		ListOptions: github.ListOptions{PerPage: 1}, // We only care about the Total count metadata
-	})
-	if err != nil {
-		log.Fatalf("Error searching pull requests: %v", err)
-	}
-	openPRs := prResult.GetTotal()
-
-	// 2. Fetch pure Open Issues count using a search query
-	issueQuery := fmt.Sprintf("repo:%s/%s is:issue state:open", owner, repo)
+	issueQuery := fmt.Sprintf("repo:%s/%s is:issue state:open", *owner, *repo)
 	issueResult, _, err := client.Search.Issues(ctx, issueQuery, &github.SearchOptions{
 		ListOptions: github.ListOptions{PerPage: 1},
 	})
 	if err != nil {
-		log.Fatalf("Error searching issues: %v", err)
+		return -1, err
 	}
-	openIssues := issueResult.GetTotal()
 
-	// Output the separated metrics
-	fmt.Printf("Repository: %s/%s\n", owner, repo)
-	fmt.Printf("Pure Open Issues: %d\n", openIssues)
-	fmt.Printf("Open Pull Requests: %d\n", openPRs)
+	return issueResult.GetTotal(), nil
 
 }
 
-func check_remote_status() {
+func GetGitOpenPR(client *github.Client, owner *string, repo *string) (int, error) {
 
-	// 1. Open the local repository
-	repo, err := git.PlainOpen(".")
+	ctx := context.Background()
+	prQuery := fmt.Sprintf("repo:%s/%s is:pr state:open", *owner, *repo)
+	prResult, _, err := client.Search.Issues(ctx, prQuery, &github.SearchOptions{
+		ListOptions: github.ListOptions{PerPage: 1}, // We only care about the Total count metadata
+	})
 	if err != nil {
-		log.Fatalf("Failed to open repo: %v", err)
+		return -1, err
 	}
 
-	// 2. Fetch updates from the remote 'origin'
+	return prResult.GetTotal(), nil
+
+}
+
+func CheckGitRemoteStatus(repo *git.Repository, githubToken string) (commonAncestor string, behind int, ahead int, err error) {
+
+	commonAncestor = ""
+	behind = 0
+	ahead = 0
+
+	// Fetch updates from the remote 'origin'
 	err = repo.Fetch(&git.FetchOptions{
 		RemoteName: "origin",
+		ClientOptions: []client.Option{
+			// Explicitly use TokenAuth to bypass the password authentication block
+			client.WithHTTPAuth(&http.BasicAuth{
+				Username: "x-access-token", // Best practice for GitHub API/Actions tokens
+				Password: githubToken,      // The actual token string
+			}),
+		},
 	})
 	// Ignore errors if the repository is already up to date
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
-		log.Fatalf("Failed to fetch from remote: %v", err)
-	}
+		logrus.Errorf("CheckGitRemoteStatus - Failed to fetch from remote: %v", err)
+		return
+	} // else if errors.Is(err, git.NoErrAlreadyUpToDate) {
+	// 	return
+	// }
 
-	// 3. Get the current local HEAD reference
+	// Get the current local HEAD reference
 	headRef, err := repo.Head()
+	logrus.Infof("CheckGitRemoteStatus heardre %s", headRef.Name())
 	if err != nil {
-		log.Fatalf("Failed to get HEAD: %v", err)
+		logrus.Errorf("CheckGitRemoteStatus - Failed to get HEAD: %v", err)
+		return
 	}
 
 	// 4. Resolve the remote-tracking reference (assuming 'origin/master')
 	remoteRefName := plumbing.ReferenceName("refs/remotes/origin/master")
 	remoteRef, err := repo.Reference(remoteRefName, true)
 	if err != nil {
-		log.Fatalf("Failed to get remote reference: %v", err)
+		logrus.Errorf("Failed to get remote reference: %v", err)
+		return
 	}
 
 	// 5. Compare local and remote hashes
 	if headRef.Hash() == remoteRef.Hash() {
-		fmt.Println("Your local branch is up to date with the remote.")
+		logrus.Println("Your local branch is up to date with the remote.")
 	} else {
-		fmt.Printf("Changes found! Local: %s, Remote: %s. Pull recommended.\n",
+		logrus.Printf("Changes found! Local: %s, Remote: %s. Pull recommended.\n",
 			headRef.Hash().String()[:7], remoteRef.Hash().String()[:7])
+		commonAncestor, behind, ahead, err = countAheadBehind(repo, headRef.Hash(), remoteRef.Hash())
+		if err != nil {
+			return
+		}
 	}
 
+	return
+}
+
+// Helper to count commits ahead and behind via commit history walking
+func countAheadBehind(repo *git.Repository, localHash, remoteHash plumbing.Hash) (commonAncestor string, behind int, ahead int, err error) {
+
+	commonAncestor = ""
+	behind = 0
+	ahead = 0
+
+	localCommit, err := repo.CommitObject(localHash)
+	if err != nil {
+		logrus.Errorf("countAheadBehind: cannot read localhash commit %v", err)
+		return
+	}
+
+	remoteCommit, err := repo.CommitObject(remoteHash)
+	if err != nil {
+		logrus.Errorf("countAheadBehind: cannot read remoteHash commit %v", err)
+		return
+	}
+
+	// Find merge base (common ancestor)
+	mergeBases, err := localCommit.MergeBase(remoteCommit)
+	if err != nil || len(mergeBases) == 0 {
+		logrus.Errorf("countAheadBehind: no common ancestor %v", err)
+		return
+	}
+	baseHash := mergeBases[0].Hash
+	commonAncestor = baseHash.String()[:7]
+
+	// Count commits from local to merge base (Ahead)
+	ahead, err = countCommitsBetween(localCommit, baseHash)
+	if err != nil {
+		logrus.Errorf("countAheadBehind: cannot countCommitsBetween localhash %v", err)
+		return
+	}
+
+	// Count commits from remote to merge base (Behind)
+	behind, err = countCommitsBetween(remoteCommit, baseHash)
+	if err != nil {
+		logrus.Errorf("countAheadBehind: cannot countCommitsBetween remotehash %v", err)
+		return
+	}
+
+	return
+}
+
+// Walk commit tree from start down to stopHash
+func countCommitsBetween(start *object.Commit, stopHash plumbing.Hash) (int, error) {
+	count := 0
+	// create an interator
+	seen := make(map[plumbing.Hash]bool)
+
+	// NewCommitPreorderIter is the correct constructor for history walking
+	walker := object.NewCommitPreorderIter(start, seen, nil)
+
+	err := walker.ForEach(func(c *object.Commit) error {
+		if c.Hash == stopHash {
+			// Stop counting when we hit the common ancestor
+			return storer.ErrStop
+		}
+		count++
+		return nil
+	})
+
+	return count, err
 }
