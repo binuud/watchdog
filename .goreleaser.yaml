@@ -6,7 +6,9 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
-version: 1
+version: 2
+
+project_name: watchdog
 
 before:
   hooks:
@@ -16,28 +18,32 @@ before:
     # - go generate ./...
   
 builds:
-  - main: ./cmd/watchdog/main.go
+  - id: "watchdog"
+    main: ./cmd/watchdogServer/main.go
+    binary: watchdog
     env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
 
 archives:
-  - format: tar.gz
+  - formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
+
+  # use zip for windows archives
+  
+checksum:
+  name_template: 'checksums.txt'
 
 changelog:
   sort: asc

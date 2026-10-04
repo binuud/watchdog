@@ -3,14 +3,16 @@ package staticFileServer
 // binu@dronasys.com
 
 import (
+	"io/fs"
 	"net/http"
+	"net/url"
 	"path"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 )
 
-func logRequestHandler(h http.Handler) http.Handler {
+func LogRequestHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		logrus.Infof("AI File Serving file %s %s %s\n", r.RemoteAddr, r.Method, r.URL)
@@ -26,30 +28,47 @@ func logRequestHandler(h http.Handler) http.Handler {
 	})
 }
 
-func logRequestSPAHandler(h http.Handler, staticDir string) http.Handler {
+func LogRequestSPAHandler(h http.Handler, staticFileServer fs.FS, staticDir string) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		logrus.Infof("SPA Serving file %s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+		logrus.Infof("SPA Request file  %s %s (%s%s)\n", r.Method, r.RemoteAddr, staticDir, r.URL.Path)
 
-		_, err := http.Dir(staticDir).Open(r.URL.Path)
-		if err != nil {
-			// If file doesn't exist, serve index.html (for SPA routing)
+		// Normalize root
+		// if r.URL.Path == "" || r.URL.Path == "/" {
+		// 	logrus.Infof("Serving index.html for root path")
+		// 	r2 := r.Clone(r.Context())
+		// 	r2.URL = &url.URL{Path: "/index.html"}
+		// 	h.ServeHTTP(w, r2)
+		// 	return
+		// }
 
-			// double check if trying to access other folders with special characters
-			if strings.ContainsAny(r.URL.Path, "/\\?%*:|\"<>") {
-				logrus.Errorf("Serving file not found, path contains special char %s\n", r.URL.Path)
-				http.ServeFile(w, r, staticDir+"/index.html")
-
-				return
-			}
-			logrus.Errorf("Serving file not found  %s\n", r.URL.Path)
-			http.ServeFile(w, r, staticDir+"/index.html")
+		// Clean path to avoid simple traversal
+		cleanPath := path.Clean(r.URL.Path)
+		if cleanPath == "" || cleanPath == "." || cleanPath == "/" {
+			logrus.Infof("Normalized path to root, serving index.html [%s]", cleanPath)
+			r2 := r.Clone(r.Context())
+			r2.URL = &url.URL{Path: "/index.html"}
+			h.ServeHTTP(w, r2)
 			return
 		}
 
-		fileName := path.Base(r.URL.Path)
+		// Try to open the file in the embedded FS
+		f, err := staticFileServer.Open(cleanPath)
+		if err != nil {
+			// File doesn't exist: SPA fallback to index.html
+			logrus.Infof("File not found in embed FS, serving index.html: %s, %v", cleanPath, err)
+			r2 := r.Clone(r.Context())
+			r2.URL = &url.URL{Path: "/index.html"}
+			h.ServeHTTP(w, r2)
+			return
+		}
+		_ = f.Close()
+
+		// Optional: safety check on base name
+		fileName := path.Base(cleanPath)
 		if !isSafeFileName(fileName) {
-			logrus.Errorf("SPA Static server, Invalid file name %s %s", fileName, r.URL.Path)
+			logrus.Errorf("SPA Static server: invalid file name %q (path=%s)", fileName, cleanPath)
 			http.Error(w, "Invalid file name", http.StatusBadRequest)
 			return
 		}
@@ -81,7 +100,23 @@ func isSafeFileName(fileName string) bool {
 // gw http Server mux
 // urlPath - the url path, which the file server listents to eg: /, /static, /assets, /public
 // staticDir - actual directory from which the files are served
-func SPAStaticServePath(gw *http.ServeMux, urlPath string, staticDir string) {
+func SPAStaticServePath(httpMux *http.ServeMux, urlPath string, embedFS fs.FS, staticDir string) {
+
+	// Optional: Use fs.Sub to strip the "ui" prefix
+	// so files are served directly from the root URL "/"
+	staticContent, err := fs.Sub(embedFS, staticDir)
+	if err != nil {
+		panic(err)
+	}
+
+	// dump all embed files
+	entries, err := fs.ReadDir(staticContent, ".")
+	if err != nil {
+		panic(err)
+	}
+	for _, entry := range entries {
+		logrus.Printf("Static file %s", entry)
+	}
 
 	// urlPath should end with slash
 	if urlPath[len(urlPath)-1] != '/' {
@@ -89,13 +124,14 @@ func SPAStaticServePath(gw *http.ServeMux, urlPath string, staticDir string) {
 	}
 
 	// Create a handler for serving static files
-	staticHandler := http.FileServer(http.Dir(staticDir))
-	// handle SPA, if file is not found server index.html
-	loggedHandler := logRequestSPAHandler(staticHandler, staticDir)
+	staticFileServer := http.FileServer(http.FS(staticContent))
+	// handle SPA, if file is not found serve index.html
+	//spaHandler := LogRequestSPAHandler(staticFileServer, staticContent, staticDir)
 
 	// Strip the URL prefix and serve files
-	gw.Handle(urlPath, http.StripPrefix(urlPath, loggedHandler))
-
+	// httpMux.Handle(urlPath, http.StripPrefix(urlPath, spaHandler))
+	httpMux.Handle(urlPath, staticFileServer)
+	// httpMux.Handle(urlPath, http.StripPrefix(urlPath, staticFileServer))
 	// log.Println("Server is listening on port ", listenAdd)
 	logrus.Infof("Server directory %s -> %s", urlPath, staticDir)
 
@@ -115,7 +151,7 @@ func StaticServeAiPath(gw *http.ServeMux, urlPath string, staticDir string) {
 
 	// Create a handler for serving static files
 	staticHandler := http.FileServer(http.Dir(staticDir))
-	loggedHandler := logRequestHandler(staticHandler)
+	loggedHandler := LogRequestHandler(staticHandler)
 
 	// Strip the URL prefix and serve files
 	gw.Handle(urlPath, http.StripPrefix(urlPath, loggedHandler))
