@@ -296,6 +296,10 @@ components:
           format: int32
         isClean:
           type: boolean
+        isPrivate:
+          type: boolean
+        visibility:
+          type: string
         numModified:
           type: integer
           format: int64

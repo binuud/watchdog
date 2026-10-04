@@ -261,3 +261,34 @@ func countCommitsBetween(start *object.Commit, stopHash plumbing.Hash) (int, err
 
 	return count, err
 }
+
+// returns the github visibility, and checks if the repo is private
+func GetGitHubVisibility(client *github.Client, owner string, repo string) (visibility string, is_private bool, err error) {
+	ctx := context.Background()
+
+	// 2. Fetch the repository metadata
+	repository, response, err := client.Repositories.Get(ctx, owner, repo)
+	if err != nil {
+		// If a private repo is accessed without a token, GitHub returns a 404 Not Found
+		// to conceal its existence rather than a 403 Forbidden.
+		if response != nil && response.StatusCode == 404 {
+			fmt.Printf("The repo '%s/%s' is Private or does not exist.\n", owner, repo)
+			return
+		}
+		logrus.Errorf("API Error: %v", err)
+		return
+	}
+
+	// 3. Inspect the visibility flag
+	// GitHub provides a clean "Visibility" field (public, private, or internal)
+	// along with a legacy boolean "Private" field.
+	visibility = repository.GetVisibility()
+	is_private = repository.GetPrivate()
+
+	logrus.Printf("Repository: %s/%s\n", owner, repo)
+	logrus.Printf("Visibility string: %s\n", visibility)
+	logrus.Printf("Is Private boolean: %t\n", is_private)
+
+	return
+
+}
