@@ -88,14 +88,11 @@ protos: ## Buid go and web protos, and swagger openApi json, for git and domain 
 start-container: ## run this to start a golang container, with this code base mounted
 	docker run --rm -it -v .:/app  -p 9090:9090 -p 9080:9080 -w /app dronasys-com/golang:1.27.1
 
-run: ## Run code once, for auto run on code change
-	go run cmd/watchdog/main.go -v  -file $(PWD)/config.yaml
+run: ## Run server, UI accessible in http://localhost:9080/
+	@go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
 
 run-mydomains: ## Run code once, for list of mydomains
-	go run cmd/watchdog/main.go -file $(PWD)/local/myDomains.yaml
-
-run-server: ## Start GRPC and HTTP server for watchdog
-	@go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
+	go run cmd/watchdog/main.go -v  -file $(PWD)/config.yaml
 
 run-scratch: ## run go lang scratch project
 	go run cmd/scratch/main.go -GITHUB_TOKEN $(GITHUB_TOKEN)

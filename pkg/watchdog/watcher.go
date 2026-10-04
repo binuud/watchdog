@@ -1,6 +1,8 @@
 package watchDogServer
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -13,14 +15,15 @@ func (s *WatchDogService) Watcher() {
 		s.DomainWatch.RefreshInterval = MIN_REFRESH_INTERVAL
 	}
 	// run checkDomain once
-	// s.CheckDomains()
+	s.CheckDomains()
 	s.CheckProjects()
 
-	// ticker := time.NewTicker(time.Duration(s.DomainWatch.RefreshInterval) * time.Second)
-	// defer ticker.Stop()
-	// for range ticker.C {
-	// 	logrus.Infof("Collecting domain data")
-	// 	s.CheckDomains()
-	// }
+	ticker := time.NewTicker(time.Duration(s.DomainWatch.RefreshInterval) * time.Second)
+	defer ticker.Stop()
+	for range ticker.C {
+		logrus.Infof("Collecting domain data")
+		s.CheckDomains()
+		s.CheckProjects()
+	}
 
 }
