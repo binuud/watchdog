@@ -141,7 +141,6 @@ func (s *WatchDogService) SummarizeGitStatus(projectRow *watchdog.GitProjectRow)
 	projectRow.Status.AheadCount = int32(ahead)
 
 	gitClient, err := github.NewClient(github.WithAuthToken(s.GitHubToken))
-	logrus.Infof("Using github token %s", s.GitHubToken)
 	if err != nil {
 		logrus.Errorf("Error creating client: %v", err)
 	} else {
