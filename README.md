@@ -2,8 +2,8 @@
 
 ![WatchDog](assets/watchdog.gif)
 
-Watchdog - watches domains and certificates for expiry, and endpoints connectivity. Watches a configured list of
-local code base, and reads information from remote github server.
+Watchdog is a dashboard, for showing domains and certificates for expiry, and endpoints connectivity. Watches a configured list of
+projects in your local code base, and reads information from remote github server.
 
 * Domains
   * Show connectivity status of configured list of domains
@@ -23,7 +23,8 @@ Work in progress.
 
 ## Install
 
-### Cli Mode
+Clone the project and run, docker is needed. Change the ./devcontainer/devcontainer.json to change the mount path.
+This program needs to access all your git folders, that you want part of the dashboard.
 
 ```
 make run
@@ -178,7 +179,6 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 ## TODO
 * Complete tests
 * If user base increases, and domain count increases optimize proto file
-* Simple UI
 * MCP server coming soon
 * In server mode, reload api/rpc has to be called by the client, once caching is enabled, watchdog will updates all domain details in fixed interval
 
@@ -189,6 +189,7 @@ docker run  -p 10030:8080 -v ./gen/web/v1/watchdog/openapi.json:/tmp/swagger.jso
 | TabulationView  | MIT         | https://github.com/jedib0t/go-pretty    |
 | WhoIsParser     | Apache 2.0  | https://github.com/likexian/whois       |
 | Pkg Release     | NA          | https://goreleaser.com                  |
+| UI Project      | MIT         | https://github.com/binuud/watchdog-ui   |
 
 Usage videos will be uploaded here, this tool will be available as a AI Module on the BrainUI soon
 * https://www.youtube.com/@dronasystems/shorts 
