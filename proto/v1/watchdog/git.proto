@@ -67,7 +67,13 @@ message GitProjectStatus {
   int32 behind_count = 4;    
   
   // True if the working tree is clean
-  bool is_clean = 5;   
+  bool is_clean = 5; 
+
+  // if repo is private
+  bool is_private = 6;
+  
+  // public, private or internatl
+  string visibility = 7;  
   
   // numbers of modified, unstaged, untracked, ignored files
   int64 num_modified = 11;

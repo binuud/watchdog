@@ -42,6 +42,8 @@ export type GitProjectStatus = {
   aheadCount?: number
   behindCount?: number
   isClean?: boolean
+  isPrivate?: boolean
+  visibility?: string
   numModified?: string
   numUnstaged?: string
   numUntracked?: string

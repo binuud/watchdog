@@ -278,6 +278,10 @@ type GitProjectStatus struct {
 	BehindCount int32 `protobuf:"varint,4,opt,name=behind_count,json=behindCount,proto3" json:"behind_count,omitempty"`
 	// True if the working tree is clean
 	IsClean bool `protobuf:"varint,5,opt,name=is_clean,json=isClean,proto3" json:"is_clean,omitempty"`
+	// if repo is private
+	IsPrivate bool `protobuf:"varint,6,opt,name=is_private,json=isPrivate,proto3" json:"is_private,omitempty"`
+	// public, private or internatl
+	Visibility string `protobuf:"bytes,7,opt,name=visibility,proto3" json:"visibility,omitempty"`
 	// numbers of modified, unstaged, untracked, ignored files
 	NumModified   int64 `protobuf:"varint,11,opt,name=num_modified,json=numModified,proto3" json:"num_modified,omitempty"`
 	NumUnstaged   int64 `protobuf:"varint,12,opt,name=num_unstaged,json=numUnstaged,proto3" json:"num_unstaged,omitempty"`
@@ -364,6 +368,20 @@ func (x *GitProjectStatus) GetIsClean() bool {
 		return x.IsClean
 	}
 	return false
+}
+
+func (x *GitProjectStatus) GetIsPrivate() bool {
+	if x != nil {
+		return x.IsPrivate
+	}
+	return false
+}
+
+func (x *GitProjectStatus) GetVisibility() string {
+	if x != nil {
+		return x.Visibility
+	}
+	return ""
 }
 
 func (x *GitProjectStatus) GetNumModified() int64 {
@@ -598,7 +616,7 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\n" +
 	"\x06ACTIVE\x10\x01\x12\f\n" +
 	"\bINACTIVE\x10\x02\x12\v\n" +
-	"\aARCHIVE\x10\x03\"\xf1\x04\n" +
+	"\aARCHIVE\x10\x03\"\xb0\x05\n" +
 	"\x10GitProjectStatus\x12\x1f\n" +
 	"\vbranch_name\x18\x01 \x01(\tR\n" +
 	"branchName\x12'\n" +
@@ -606,7 +624,12 @@ const file_v1_watchdog_git_proto_rawDesc = "" +
 	"\vahead_count\x18\x03 \x01(\x05R\n" +
 	"aheadCount\x12!\n" +
 	"\fbehind_count\x18\x04 \x01(\x05R\vbehindCount\x12\x19\n" +
-	"\bis_clean\x18\x05 \x01(\bR\aisClean\x12!\n" +
+	"\bis_clean\x18\x05 \x01(\bR\aisClean\x12\x1d\n" +
+	"\n" +
+	"is_private\x18\x06 \x01(\bR\tisPrivate\x12\x1e\n" +
+	"\n" +
+	"visibility\x18\a \x01(\tR\n" +
+	"visibility\x12!\n" +
 	"\fnum_modified\x18\v \x01(\x03R\vnumModified\x12!\n" +
 	"\fnum_unstaged\x18\f \x01(\x03R\vnumUnstaged\x12#\n" +
 	"\rnum_untracked\x18\r \x01(\x03R\fnumUntracked\x12\x1f\n" +

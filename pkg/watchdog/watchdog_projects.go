@@ -162,6 +162,11 @@ func (s *WatchDogService) SummarizeGitStatus(projectRow *watchdog.GitProjectRow)
 		}
 	}
 
+	projectRow.Status.Visibility, projectRow.Status.IsPrivate, err = gitUtils.GetGitHubVisibility(gitClient, projectRow.Project.User, projectRow.Project.Name)
+	if err != nil {
+		logrus.Errorf("SummarizeGitStatus: Cannot get repo visibiltiy: %v", err)
+	}
+
 	return nil
 
 }
