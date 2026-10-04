@@ -184,6 +184,13 @@ curl -X POST 'http://localhost:9080/v1/watchdog/reload' -d '{}'
 ```  
 
 ## Local Development
+
+Checkout the UI project, is the parent folder of this project, so watchdog (this project) and watchdog-ui (ui project) are at the same level in the parent folder.
+
+```
+git clone https://github.com/binuud/watchdog-ui.git
+```
+
 When you are developing on this, or want to make changes, 
 use below command to start a golang container, and mount the source code within the container
 ```

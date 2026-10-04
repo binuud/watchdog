@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 
 	protoV1 "github.com/binuud/watchdog/gen/go/v1/watchdog"
+	fileServer "github.com/binuud/watchdog/pkg/staticFileServer"
 	watchDogServer "github.com/binuud/watchdog/pkg/watchdog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	log "github.com/sirupsen/logrus"
@@ -49,9 +51,12 @@ func runHtppServer() {
 		log.Fatalln(err)
 	}
 
+	httpMux := serveStaticPaths()
+	httpMux.Handle("/v1/", gwMux)
+
 	gwServer := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%d", *server_http_port),
-		Handler: gwMux,
+		Handler: httpMux,
 	}
 
 	log.Infof("HTTP server starting...(%d)", *server_http_port)
@@ -78,6 +83,20 @@ func runGRPCServer() {
 	log.Infof("GRPC server starting...(%d)", *server_grpc_port)
 	log.Fatalln(insecureServer.Serve(insecureConn))
 
+}
+
+func serveStaticPaths() *http.ServeMux {
+
+	httpMux := http.NewServeMux()
+
+	SERVABLE_UI_DIRECTORY := os.Getenv("SERVABLE_UI_DIRECTORY")
+	if SERVABLE_UI_DIRECTORY == "" {
+		SERVABLE_UI_DIRECTORY = "./ui"
+	}
+
+	fileServer.SPAStaticServePath(httpMux, "/", SERVABLE_UI_DIRECTORY)
+
+	return httpMux
 }
 
 func main() {
