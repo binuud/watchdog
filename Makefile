@@ -132,7 +132,7 @@ release: ## for releasing the package
 # git tag -a v0.1.0 -m "Release COMMENT"
 # git push origin [version]
 # export GITHUB_TOKEN="YOUR_GH_TOKEN"
-	goreleaser release	
+	goreleaser release --clean
 
 release-check: ## run release build, but do not publish
 	goreleaser check
