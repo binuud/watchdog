@@ -1,72 +1,33 @@
 # watchdog
 
-![WatchDog](assets/watchdog.png)
+![WatchDog](assets/watchdog.gif)
 
-Watchdog - watches domains and certificates for expiry, and endpoints connectivity.
+Watchdog - watches domains and certificates for expiry, and endpoints connectivity. Watches a configured list of
+local code base, and reads information from remote github server.
+
+* Domains
+  * Show connectivity status of configured list of domains
+  * Shows certification validity 
+  * Show reachability of multiple configured endpoints per domain
+  * Show whois database for the domain
+  * Show if whois data was modified recently in under 30 days
+* Projects 
+  * Show list of configured git projects from your local repo
+  * Shows open issues against the project
+  * Show open PR's against the project
+  * Show number of modified and new files in the repo, on local machine
+  * Compare against remote github, to show if master can be merged
+  * Show if remote is ahead or behind local master
+
 Work in progress.
-
-Sample Output
-```
-usage: watchdog --config-file [filename-with-path] --code_root_folder [absolute path of folder containing code]
-Using config file  config.yaml
-
-
-
- _  _  _ _______ _______ _______ _     _ ______   _____   ______
- |  |  | |_____|    |    |       |_____| |     \ |     | |  ____
- |__|__| |     |    |    |_____  |     | |_____/ |_____| |_____|
-                                                                
-    
-Fetching data... (Single Thread)
-┌───┬─────────────────────────────────────┬─────────────────────────────────┬───────┬───────────────┐
-│   │               DOMAINS               │              CERTS              │   IP  │   REACHABLE   │
-│   ├──────────────────┬─────────┬────────┼─────┬───────┬────────┬──────────┼───────┼───────┬───────┤
-│   │ NAME/SUB         │ MUTATED │ EXPIRY │ TOT │ VALID │ EXPIRY │ VALIDITY │ (NUM) │ VALID │ TOTAL │
-│   ├──────────────────┼─────────┴────────┼─────┴───────┼────────┼──────────┴───────┴───────┴───────┤
-│   │                  │      (DAYS)      │             │ (DAYS) │                                  │
-├───┼──────────────────┼─────────┬────────┼─────┬───────┼────────┼──────────┬───────┬───────┬───────┤
-│ 1 │ www.google.com   │  2034 ✓ │ 1257 ✓ │  3  │   1   │ 68   ✓ │   Valid  │   2   │   2   │     2 │
-│   │                  │         │        │     │       │        │          │       │       │       │
-├───┼──────────────────┼─────────┼────────┼─────┼───────┼────────┼──────────┼───────┼───────┼───────┤
-│ 2 │ mail.google.com  │         │        │  3  │   1   │ 68   ✓ │   Valid  │   2   │   1   │     1 │
-│   │                  │         │        │     │       │        │          │       │       │       │
-├───┼──────────────────┼─────────┼────────┼─────┼───────┼────────┼──────────┼───────┼───────┼───────┤
-│ 3 │ www.gmail.com    │  267  ✓ │ 128  ✓ │  3  │   1   │ 68   ✓ │   Valid  │   2   │   1   │     1 │
-│   │                  │         │        │     │       │        │          │       │       │       │
-├───┼──────────────────┼─────────┼────────┼─────┼───────┼────────┼──────────┼───────┼───────┼───────┤
-│ 4 │ www.apple.com    │  73   ✓ │ 320  ✓ │  2  │   1   │ 194  ✓ │   Valid  │   3   │   1   │     1 │
-│   │                  │         │        │     │       │        │          │       │       │       │
-├───┼──────────────────┼─────────┼────────┼─────┼───────┼────────┼──────────┼───────┼───────┼───────┤
-│ 5 │ www.dronasys.com │  744  ✓ │ 837  ✓ │  2  │   1   │ 53   ✓ │   Valid  │   1   │   1   │     1 │
-│   │                  │         │        │     │       │        │          │       │       │       │
-├───┼──────────────────┼─────────┼────────┼─────┼───────┼────────┼──────────┼───────┼───────┼───────┤
-│   │                  │         │        │     │       │        │          │       │       │       │
-└───┴──────────────────┴─────────┴────────┴─────┴───────┴────────┴──────────┴───────┴───────┴───────┘
-```
-Column description
-* Mutated - days before last update of whois data
-* Expiry - number of days remaining for the domain to expire
-* Certs
-  * Total - total number of certificates associated with the domain, subdomain
-  * Valid - number of valid certificates (name mapping + expiry)
-  * Expiry - number of days remaining for the ceritificate to expire
-* IP - number of ip associated with the domain
-* Reachable - endpoints can be configured in the config.yaml file, each domain can have multiple endpoints, watchdog will test reachability of each endpoint.
-
-## What is this
-This is simple tool to display expiry and connectivity information on a small set of domains, subdomains, and endpoints. I wanted a simple tool to look at the following
-* Find number of certificates associated with a domain
-* Find the latest expiring certificate
-* Check if whois data was updated recently (in 10 days)
-* Check if domain is going to expire, show a warning if it is expiring in 10 days
-* Find number of IPV4/IPv6 addresses associated with the domain
-* If there are sub domains, make seperate entries in the config.yaml file, as shown in this readme file
-* You might be hosting dev apps, in some intenal endpoint path like example.com/dev/app1, you can add these
-end point entries, and the tool will check for its reachability
 
 ## Install
 
 ### Cli Mode
+
+```
+make run
+```
 
 Via go
 ```
