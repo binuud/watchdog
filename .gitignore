@@ -31,6 +31,6 @@ go.work.sum
 .goreleaser.yml
 configs/config.yaml
 
-
+ui/*
 dist/
 local/

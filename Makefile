@@ -48,6 +48,11 @@ help: ## This help.
 build: ## Build docker image
 	docker build --no-cache  --build-arg BUILD_VER=$(BUILD_VER) $(MULTI_PLATFORM_DOCKER) -t $(REPO)/$(APP_NAME) -f deployment/Dockerfile .
 
+build-ui: ## build ui image, and copy distribution file to ./ui folder
+	cd ../watchdog-ui && make build
+	rm -rf ui/*
+	cp -R ../watchdog-ui/app/dist/watchdog-ui/browser/ ui/
+
 build-binary: ## Build the watchDog project
 	go build .
 
