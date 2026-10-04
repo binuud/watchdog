@@ -90,7 +90,7 @@ run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go -file $(PWD)/local/myDomains.yaml
 
 run-server: ## Start GRPC and HTTP server for watchdog
-	go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
+	@go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
 
 run-scratch: ## run go lang scratch project
 	go run cmd/scratch/main.go -GITHUB_TOKEN $(GITHUB_TOKEN)
