@@ -2,22 +2,33 @@ package main
 
 import (
 	"context"
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"net"
 	"net/http"
-	"os"
 
 	protoV1 "github.com/binuud/watchdog/gen/go/v1/watchdog"
-	fileServer "github.com/binuud/watchdog/pkg/staticFileServer"
+	spahttpserver "github.com/binuud/watchdog/pkg/spaHttpServer"
 	watchDogServer "github.com/binuud/watchdog/pkg/watchdog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
 
+//go:embed ui/*
+var embeddedFiles embed.FS
+
+type spaFileSystem struct {
+	baseFS    fs.FS
+	indexPath string
+}
+
+// staticFileServer "github.com/binuud/watchdog/pkg/staticFileServer"
 var (
 	server_grpc_port = flag.Int("grpc_port", 9090, "Watchdog GRPC Serverport, no token required unsecured")
 	server_http_port = flag.Int("http_port", 9080, "Watchdog HTTP Server port, no token required unsecured")
@@ -87,14 +98,24 @@ func runGRPCServer() {
 
 func serveStaticPaths() *http.ServeMux {
 
-	httpMux := http.NewServeMux()
-
-	SERVABLE_UI_DIRECTORY := os.Getenv("SERVABLE_UI_DIRECTORY")
-	if SERVABLE_UI_DIRECTORY == "" {
-		SERVABLE_UI_DIRECTORY = "./ui"
+	// Strip the "ui" prefix from the embedded paths
+	// so we don't have to include "/ui/" in your URLs.
+	uiFS, err := fs.Sub(embeddedFiles, "ui")
+	if err != nil {
+		panic(err)
 	}
 
-	fileServer.SPAStaticServePath(httpMux, "/", SERVABLE_UI_DIRECTORY)
+	// Initialize our SPA handler wrapper
+	handler := spahttpserver.SpaFileSystem{
+		BaseFS:    uiFS,
+		IndexPath: "index.html",
+	}
+
+	httpMux := http.NewServeMux()
+
+	httpMux.Handle("/", handler)
+
+	logrus.Infof("Server directory %s -> %s", "/", ".")
 
 	return httpMux
 }

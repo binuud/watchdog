@@ -50,11 +50,11 @@ build: ## Build docker image
 
 build-ui: ## build ui image, and copy distribution file to ./ui folder
 	cd ../watchdog-ui && make build
-	rm -rf ui/*
-	cp -R ../watchdog-ui/app/dist/watchdog-ui/browser/ ui/
+	rm -rf cmd/watchdogServer/ui/*
+	cp -R ../watchdog-ui/app/dist/watchdog-ui/browser/ cmd/watchdogServer/ui/
 
-build-binary: ## Build the watchDog project
-	go build .
+build-binary: ## Build the watchDog server binary, with embedded static html files
+	go build cmd/watchdogServer/main.go
 
 deploy: ## Deploy all images to docker hub
 	@echo "====================> Pushing image to dockerhub (PUBLIC) ."
@@ -90,6 +90,12 @@ start-container: ## run this to start a golang container, with this code base mo
 
 run: ## Run server, UI accessible in http://localhost:9080/
 	@go run cmd/watchdogServer/main.go -v -grpc_port 9090 -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
+	
+run-go-binary: ## Run the go binary
+	./main -grpc_port 9090 -v -http_port 9080 -GITHUB_TOKEN $(GITHUB_TOKEN)
+
+run-dist-darwin: ## Run the binary from distribution
+	cd dist/watchdog_darwin_arm64_v8.0 && ./watchdog -grpc_port 9091 -v -http_port 9081 -GITHUB_TOKEN $(GITHUB_TOKEN) -config_file ~/Code/watchdog/watchdog/configs/config.yaml -code_root_folder ~/Code
 
 run-mydomains: ## Run code once, for list of mydomains
 	go run cmd/watchdog/main.go -v  -file $(PWD)/config.yaml
@@ -119,6 +125,8 @@ test: ## Run tests
 testCoverage: ## Run test coverage
 	go test ./pkg/... -coverprofile=coverage.out
 
+
+
 release: ## for releasing the package
 ## comments for reference
 # git tag -a v0.1.0 -m "Release COMMENT"
@@ -127,4 +135,5 @@ release: ## for releasing the package
 	goreleaser release	
 
 release-check: ## run release build, but do not publish
-	goreleaser release --snapshot	
+	goreleaser check
+	goreleaser release --snapshot --clean
