@@ -104,11 +104,11 @@ run-scratch: ## run go lang scratch project
 	go run cmd/scratch/main.go -GITHUB_TOKEN $(GITHUB_TOKEN)
 
 run-docker: ## run docker image as server
-	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -p 10090:9090 -p 10080:9080 -v  "$(shell pwd)/config.yaml:/configs/config.yaml" $(REPO)/$(APP_NAME)
-
-run-docker-once: ## run docker image once
-	docker stop $(APP_NAME); docker rm $(APP_NAME); docker run --rm --name $(APP_NAME) -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
-
+	docker stop $(APP_NAME); docker rm $(APP_NAME); \
+	docker run --rm  -p 9090:9090 -p 9080:9080 \
+	-v  "./configs/config.yaml:/configs/config.yaml" \
+	-v "$(HOME)/Code:/data/Code" \
+	$(REPO)/$(APP_NAME) -GITHUB_TOKEN $(GITHUB_TOKEN) -code_root_folder /data -config_file /configs/config.yaml -v
 
 
 swagger-ui: ## launch swagger ui

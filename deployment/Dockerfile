@@ -11,18 +11,21 @@ ARG TARGETARCH
 
 LABEL maintainer="Binu Udayakumar"
 
+RUN apk add --no-cache ca-certificates
+
 RUN addgroup -S nonroot -g 10001 && adduser -S nonroot -G nonroot -u 10001
 RUN mkdir /build
 COPY ./ /build/
 
 ## For mounting config files on distroless containers
 RUN mkdir /configs
+RUN mkdir /data
 
 WORKDIR /build
 
 ENV GO111MODULE=auto
 
-# Build WatchDog - Watch for Certificate expiry, connectivity, domain expiry
+# Build WatchDog - domain and project watcher
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build  -o watchDog cmd/watchdog/main.go
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build  -o watchDogServer cmd/watchdogServer/main.go
 
@@ -31,6 +34,10 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build  -o watchDogSer
 FROM scratch
 
 LABEL maintainer="Binu Udayakumar"
+
+# Copy the compiled certificate bundle from the builder stage
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
 
 ## HTTP Port
 EXPOSE 9080
@@ -50,10 +57,9 @@ USER nonroot:nonroot
 ## create a directory called dataVolume, using busybox
 ## since scratch images do not allow for directory creation
 COPY --from=builder --chown=nonroot:nonroot /configs /configs
-
+COPY --from=builder --chown=nonroot:nonroot /data /data
 # copy compiled app
 COPY --from=builder --chown=nonroot:nonroot /build/watchDog /watchDog
 COPY --from=builder --chown=nonroot:nonroot /build/watchDogServer /watchDogServer
-
 
 ENTRYPOINT ["./watchDogServer"]
