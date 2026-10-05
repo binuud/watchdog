@@ -75,20 +75,25 @@ Command Line options
 docker pull dronasys/watchdog
 ```
 
-To run once with the given config, use the following command, this will give the table output.
+To start the watchdog server server 
 ```
-docker run -v ./config.yaml:/configs/config.yaml --entrypoint /watchDog  dronasys/watchdog  --file /configs/config.yaml   
-```
-
-To start the grpc and http server 
-```
-docker run --name WatchDog -p 10090:9090 -p 10080:9080 -d -v  "./config.yaml:/configs/config.yaml" dronasys/watchdog
+	docker run --rm  -p 9090:9090 -p 9080:9080 \
+	-v  "./configs/config.yaml:/configs/config.yaml" \
+	-v "[CODE ROOT]:/data" \
+	dronasys/watchdog -GITHUB_TOKEN $(GITHUB_TOKEN) -code_root_folder /data -config_file /configs/config.yaml -v
 ```
 * container port 9090 - grpc
 * container port 9080 - http
 * mount config file to /configs/config.yaml
+* in config.yaml file, the project directory should be accessible as /data/[PROJECT DIR] from within the container
 
 When using docker image, the default entrypoint is the 'server'.
+
+Access from UI
+```
+http://localhost:9080
+```
+where 9080 is the http port
 
 ## Local Development
 
@@ -96,12 +101,6 @@ Checkout the UI project, is the parent folder of this project, so watchdog (this
 
 ```
 git clone https://github.com/binuud/watchdog-ui.git
-```
-
-When you are developing on this, or want to make changes, 
-use below command to start a golang container, and mount the source code within the container
-```
-make start-container
 ```
 
 from within the container, run the make command to select various targets
