@@ -13,8 +13,8 @@ GITHUB_TOKEN=""
 REPO=dronasys
 APP_NAME ?= watchdog
 
-BUILD_VER ?= v0.1.44
-DOCKER_HUB_TAG ?= v0.1.44
+BUILD_VER ?= v0.1.47
+DOCKER_HUB_TAG ?= v0.1.47
 
 GOLANG_IMAGE=golang:1.27.1
 
@@ -55,6 +55,9 @@ build-ui: ## build ui image, and copy distribution file to ./ui folder
 
 build-binary: ## Build the watchDog server binary, with embedded static html files
 	go build cmd/watchdogServer/main.go
+
+tag-repo: ## create a new tag on the repo for release
+	git tag $(BUILD_VER); git push origin $(BUILD_VER)
 
 deploy: ## Deploy all images to docker hub
 	@echo "====================> Pushing image to dockerhub (PUBLIC) ."
