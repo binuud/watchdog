@@ -72,7 +72,7 @@ Command Line options
 ### Docker Image
 
 ```
-docker pull dronasys/watchdog
+docker pull dronasys/watchdog:latest
 ```
 
 To start the watchdog server server 
@@ -80,8 +80,9 @@ To start the watchdog server server
 	docker run --rm  -p 9090:9090 -p 9080:9080 \
 	-v  "./configs/config.yaml:/configs/config.yaml" \
 	-v "[CODE ROOT]:/data" \
-	dronasys/watchdog -GITHUB_TOKEN $(GITHUB_TOKEN) -code_root_folder /data -config_file /configs/config.yaml -v
+	dronasys/watchdog:latest -GITHUB_TOKEN $(GITHUB_TOKEN) -code_root_folder /data -config_file /configs/config.yaml -v
 ```
+* use the download the [sample config](configs/sampleConfig.yaml), and make changes as required
 * container port 9090 - grpc
 * container port 9080 - http
 * mount config file to /configs/config.yaml

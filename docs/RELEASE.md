@@ -1,4 +1,22 @@
-# Go binary
+# Release
+
+Release go binary on github and docker image to docker hub
+
+## Docker
+
+Login to docker
+```
+docker login
+```
+
+Change the image tag on Makefile
+
+```
+make build
+make deploy
+```
+
+## Go binary
 
 we build go binary using go releaser
 
